@@ -31,12 +31,11 @@ class DashboardScreen extends ConsumerWidget {
             tooltip: 'Settings',
           ),
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              final repository = ref.read(supabaseRepositoryProvider);
-              await repository.signOut();
+            icon: const Icon(Icons.person_outline),
+            onPressed: () {
+              Navigator.pushNamed(context, '/settings');
             },
-            tooltip: 'Sign Out',
+            tooltip: 'Profile',
           ),
         ],
       ),

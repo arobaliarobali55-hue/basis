@@ -248,8 +248,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       trailing: Switch(
                         value: themeMode == ThemeMode.light,
                         onChanged: (value) async {
-                          final updateTheme = ref.read(updateThemeProvider);
-                          await updateTheme(value ? 'light' : 'dark');
+                          try {
+                            final updateTheme = ref.read(updateThemeProvider);
+                            await updateTheme(value ? 'light' : 'dark');
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Theme changed to ${value ? 'light' : 'dark'} mode'),
+                                  backgroundColor: AppTheme.accentColor,
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Failed to update theme: $e'),
+                                  backgroundColor: AppTheme.errorColor,
+                                ),
+                              );
+                            }
+                          }
                         },
                       ),
                     ),
@@ -360,10 +380,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ? const Icon(Icons.check, color: AppTheme.accentColor)
                 : null,
             onTap: () async {
-              final updateCurrency = ref.read(updateCurrencyProvider);
-              await updateCurrency(currencyCode);
-              if (mounted) {
-                Navigator.pop(context);
+              try {
+                final updateCurrency = ref.read(updateCurrencyProvider);
+                await updateCurrency(currencyCode);
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Currency changed to $currencyCode'),
+                      backgroundColor: AppTheme.accentColor,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to update currency: $e'),
+                      backgroundColor: AppTheme.errorColor,
+                    ),
+                  );
+                }
               }
             },
           );

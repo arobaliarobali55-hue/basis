@@ -299,8 +299,10 @@ final updateThemeProvider = Provider<Future<void> Function(String)>((ref) {
     final settings = settingsAsync.value;
     if (settings != null) {
       final updatedSettings = settings.copyWith(theme: theme);
-      final updateFn = ref.read(updateUserSettingsProvider);
-      await updateFn(updatedSettings);
+      final repository = ref.read(supabaseRepositoryProvider);
+      await repository.updateUserSettings(updatedSettings);
+      // Invalidate providers to trigger rebuild
+      ref.invalidate(userSettingsProvider);
     }
   };
 });
@@ -312,8 +314,10 @@ final updateCurrencyProvider = Provider<Future<void> Function(String)>((ref) {
     final settings = settingsAsync.value;
     if (settings != null) {
       final updatedSettings = settings.copyWith(currency: currency);
-      final updateFn = ref.read(updateUserSettingsProvider);
-      await updateFn(updatedSettings);
+      final repository = ref.read(supabaseRepositoryProvider);
+      await repository.updateUserSettings(updatedSettings);
+      // Invalidate providers to trigger rebuild
+      ref.invalidate(userSettingsProvider);
     }
   };
 });
