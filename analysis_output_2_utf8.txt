@@ -1,0 +1,11 @@
+﻿Analyzing Basis...                                              
+
+warning - Unnecessary cast - lib\data\repositories\supabase_repository.dart:90:31 - unnecessary_cast
+warning - Unnecessary cast - lib\data\repositories\supabase_repository.dart:107:31 - unnecessary_cast
+   info - Unnecessary use of multiple underscores - lib\presentation\providers\app_providers.dart:34:16 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\presentation\providers\app_providers.dart:104:16 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\presentation\providers\app_providers.dart:114:16 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\presentation\providers\app_providers.dart:124:16 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\presentation\providers\app_providers.dart:134:16 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\presentation\providers\app_providers.dart:150:16 - unnecessary_underscores
+
