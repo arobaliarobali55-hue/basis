@@ -4,7 +4,6 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
 import 'package:basis/presentation/widgets/common/entry_animation.dart';
-import 'ai_report_screen.dart';
 
 class IntelligenceDashboard extends ConsumerWidget {
   const IntelligenceDashboard({super.key});
@@ -16,281 +15,266 @@ class IntelligenceDashboard extends ConsumerWidget {
     final departmentData = ref.watch(departmentBreakdownProvider);
     final isLoading = toolsAsync.isLoading;
 
+    if (isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Cost Intelligence')),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AiReportScreen()),
-          );
-        },
-        icon: const Icon(Icons.psychology),
-        label: const Text('Generate Deep AI Audit'),
-        backgroundColor: AppTheme.accentColor,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // 3-Year Cost Projection Card
-            const EntryAnimation(child: _CostProjectionCard()),
-            const SizedBox(height: AppTheme.spacing16),
+      backgroundColor: AppTheme.backgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          // Premium Header
+          const SliverToBoxAdapter(child: _DashboardHeader()),
 
-            // Waste Detection Section
-            const EntryAnimation(
-              delay: Duration(milliseconds: 100),
-              child: _WasteDetectionSection(),
-            ),
-            const SizedBox(height: AppTheme.spacing16),
-
-            // Consolidation Suggestions
-            const EntryAnimation(
-              delay: Duration(milliseconds: 200),
-              child: _ConsolidationSection(),
-            ),
-            const SizedBox(height: AppTheme.spacing24),
-
-            // Advanced Intelligence Visualizations
-            if (!isLoading) ...[
-              EntryAnimation(
-                delay: const Duration(milliseconds: 300),
-                child: _DepartmentBarChart(data: departmentData),
+          // KPI Grid Section
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacing24),
+            sliver: SliverToBoxAdapter(
+              child: EntryAnimation(
+                delay: const Duration(milliseconds: 100),
+                child: _KpiSummaryGrid(projection: projection),
               ),
-              const SizedBox(height: AppTheme.spacing24),
-              EntryAnimation(
-                delay: const Duration(milliseconds: 400),
-                child: _FiveYearProjectionChart(data: projection),
+            ),
+          ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: AppTheme.spacing32)),
+
+          // Main Charts Section
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacing24),
+            sliver: SliverToBoxAdapter(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // SaaS Spend Over Time (Large Line Chart)
+                  Expanded(
+                    flex: 7,
+                    child: EntryAnimation(
+                      delay: const Duration(milliseconds: 200),
+                      child: _SpendOverTimeChart(data: projection),
+                    ),
+                  ),
+                  const SizedBox(width: AppTheme.spacing24),
+                  // Spend by Category (Donut Chart)
+                  Expanded(
+                    flex: 3,
+                    child: EntryAnimation(
+                      delay: const Duration(milliseconds: 300),
+                      child: _SpendCategorySection(data: departmentData),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: AppTheme.spacing32),
-            ] else
-              const Center(child: CircularProgressIndicator()),
-          ],
-        ),
+            ),
+          ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: AppTheme.spacing32)),
+
+          // AI Financial Insights Section
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacing24),
+            sliver: const SliverToBoxAdapter(
+              child: EntryAnimation(
+                delay: Duration(milliseconds: 400),
+                child: _AiFinancialInsightsSection(),
+              ),
+            ),
+          ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: AppTheme.spacing48)),
+        ],
       ),
     );
   }
 }
 
-class _CostProjectionCard extends ConsumerWidget {
-  const _CostProjectionCard();
+class _DashboardHeader extends StatelessWidget {
+  const _DashboardHeader();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final projection = ref.watch(threeYearProjectionProvider);
-    final maxY = (projection[3] ?? 1000) * 1.2;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '3-Year Cost Projection',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: AppTheme.spacing8),
-            Text(
-              'Estimated total cost for the next 3 years based on current growth.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: AppTheme.spacing24),
-            AspectRatio(
-              aspectRatio: 2.2,
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  maxY: maxY,
-                  barTouchData: BarTouchData(
-                    touchTooltipData: BarTouchTooltipData(
-                      getTooltipColor: (_) => AppTheme.surfaceColor,
-                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                        return BarTooltipItem(
-                          '\$${rod.toY.toStringAsFixed(0)}',
-                          const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  titlesData: FlTitlesData(
-                    show: true,
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          const style = TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          );
-                          String text;
-                          switch (value.toInt()) {
-                            case 0:
-                              text = 'Year 1';
-                              break;
-                            case 1:
-                              text = 'Year 2';
-                              break;
-                            case 2:
-                              text = 'Year 3';
-                              break;
-                            default:
-                              text = '';
-                          }
-                          return SideTitleWidget(
-                            meta: meta,
-                            space: 4,
-                            child: Text(text, style: style),
-                          );
-                        },
-                      ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: false,
-                      ), // Hide Y axis labels for cleaner look
-                    ),
-                    topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                  ),
-                  borderData: FlBorderData(show: false),
-                  gridData: FlGridData(show: false),
-                  barGroups: [
-                    BarChartGroupData(
-                      x: 0,
-                      barRods: [
-                        BarChartRodData(
-                          toY: projection[1] ?? 0,
-                          gradient: LinearGradient(
-                            colors: [
-                              AppTheme.primaryColor,
-                              AppTheme.primaryColor.withOpacity(0.6),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                          width: 26,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(6),
-                          ),
-                          backDrawRodData: BackgroundBarChartRodData(
-                            show: true,
-                            toY: maxY,
-                            color: AppTheme.surfaceHighlight.withOpacity(0.3),
-                          ),
-                        ),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 1,
-                      barRods: [
-                        BarChartRodData(
-                          toY: projection[2] ?? 0,
-                          gradient: LinearGradient(
-                            colors: [
-                              AppTheme.secondaryColor,
-                              AppTheme.secondaryColor.withOpacity(0.6),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                          width: 26,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(6),
-                          ),
-                          backDrawRodData: BackgroundBarChartRodData(
-                            show: true,
-                            toY: maxY,
-                            color: AppTheme.surfaceHighlight.withOpacity(0.3),
-                          ),
-                        ),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 2,
-                      barRods: [
-                        BarChartRodData(
-                          toY: projection[3] ?? 0,
-                          gradient: LinearGradient(
-                            colors: [
-                              AppTheme.warningColor,
-                              AppTheme.warningColor.withOpacity(0.6),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                          width: 26,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(6),
-                          ),
-                          backDrawRodData: BackgroundBarChartRodData(
-                            show: true,
-                            toY: maxY,
-                            color: AppTheme.surfaceHighlight.withOpacity(0.3),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(AppTheme.spacing24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                'Financial Overview',
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -1.0,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: AppTheme.spacing12),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  border: Border.all(
+                    color: AppTheme.primaryColor.withOpacity(0.2),
+                  ),
+                ),
+                child: Text(
+                  'Acme Corp HQ',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.primaryColor.withOpacity(0.8),
+                  ),
+                ),
+              ),
+              const Spacer(),
+              _PeriodPicker(),
+              const SizedBox(width: AppTheme.spacing16),
+              _NotificationBadge(),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Real-time SaaS spend and efficiency metrics',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PeriodPicker extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceColor,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        border: Border.all(color: AppTheme.borderColor),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _PeriodButton(label: 'Last 30 days', isSelected: false),
+          _PeriodButton(label: '1 Year', isSelected: true),
+          _PeriodButton(label: '3Y Projection', isSelected: false),
+        ],
+      ),
+    );
+  }
+}
+
+class _PeriodButton extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+
+  const _PeriodButton({required this.label, required this.isSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: isSelected ? AppTheme.primaryColor : Colors.transparent,
+        borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+          color: isSelected ? Colors.white : AppTheme.textSecondary,
         ),
       ),
     );
   }
 }
 
-class _WasteDetectionSection extends ConsumerWidget {
-  const _WasteDetectionSection();
+class _NotificationBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceColor,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        border: Border.all(color: AppTheme.borderColor),
+      ),
+      child: const Icon(Icons.notifications_outlined, size: 20),
+    );
+  }
+}
+
+class _KpiSummaryGrid extends StatelessWidget {
+  final Map<int, double> projection;
+
+  const _KpiSummaryGrid({required this.projection});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final wasteData = ref.watch(wasteDetectionProvider);
-    final unused = wasteData['unused'] as List<dynamic>;
-    final duplicates =
-        wasteData['duplicates']
-            as Map<
-              String,
-              dynamic
-            >; // Map<String, List<String>> basically? No dynamic.
-    // Actually provider returns dynamic map.
+  Widget build(BuildContext context) {
+    // Mocking some data for the KPIs based on the reference
+    final monthlySpend = projection[1] != null ? projection[1]! / 12 : 142500.0;
 
-    if (wasteData['totalWarnings'] == 0) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Text(
-          'Hidden Costs Detected',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(color: AppTheme.errorColor),
-        ),
-        const SizedBox(height: AppTheme.spacing8),
-        ...unused.map(
-          (u) => _WarningCard(
-            title: 'Unused Licenses',
-            message: u.toString(),
-            icon: Icons.person_off,
+        Expanded(
+          child: _KpiSummaryCard(
+            label: 'TOTAL MONTHLY SPEND',
+            value: '\$${(monthlySpend).toStringAsFixed(0)}',
+            trend: '+2.4%',
+            trendColor: AppTheme.accentColor,
+            icon: Icons.account_balance_wallet,
+            iconColor: Colors.blue,
           ),
         ),
-        ...(duplicates as Map).entries.map(
-          (e) => _WarningCard(
-            title: 'Duplicate Tools in ${e.key}',
-            message:
-                'You have multiple tools for this category: ${(e.value as List).join(", ")}',
-            icon: Icons.copy,
+        const SizedBox(width: AppTheme.spacing16),
+        Expanded(
+          child: _KpiSummaryCard(
+            label: 'ANNUAL SPEND',
+            value: '\$${(projection[1] ?? 1710000).toStringAsFixed(0)}',
+            trend: '-1.2%',
+            trendColor: AppTheme.errorColor,
+            icon: Icons.pie_chart,
+            iconColor: Colors.indigo,
+          ),
+        ),
+        const SizedBox(width: AppTheme.spacing16),
+        Expanded(
+          child: _KpiSummaryCard(
+            label: '3-YEAR PROJECTED',
+            value: '\$${(projection[3] ?? 6120000).toStringAsFixed(0)}',
+            trend: 'Est.',
+            trendColor: AppTheme.textSecondary,
+            icon: Icons.calendar_today,
+            iconColor: Colors.purple,
+          ),
+        ),
+        const SizedBox(width: AppTheme.spacing16),
+        Expanded(
+          child: _KpiSummaryCard(
+            label: 'POTENTIAL SAVINGS',
+            value: '\$18,420',
+            trend: '/mo',
+            trendColor: AppTheme.textSecondary,
+            icon: Icons.lightbulb_outline,
+            iconColor: AppTheme.accentColor,
+          ),
+        ),
+        const SizedBox(width: AppTheme.spacing16),
+        Expanded(
+          child: _KpiSummaryCard(
+            label: 'COST PER EMPLOYEE',
+            value: '\$485',
+            trend: 'Avg',
+            trendColor: AppTheme.textSecondary,
+            icon: Icons.people_outline,
+            iconColor: Colors.orange,
           ),
         ),
       ],
@@ -298,314 +282,615 @@ class _WasteDetectionSection extends ConsumerWidget {
   }
 }
 
-class _WarningCard extends StatelessWidget {
-  final String title;
-  final String message;
+class _KpiSummaryCard extends StatelessWidget {
+  final String label;
+  final String value;
+  final String trend;
+  final Color trendColor;
   final IconData icon;
+  final Color iconColor;
 
-  const _WarningCard({
-    required this.title,
-    required this.message,
+  const _KpiSummaryCard({
+    required this.label,
+    required this.value,
+    required this.trend,
+    required this.trendColor,
     required this.icon,
+    required this.iconColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: AppTheme.errorColor.withValues(alpha: 0.1),
-      child: ListTile(
-        leading: Icon(icon, color: AppTheme.errorColor),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: AppTheme.errorColor,
+    return Container(
+      padding: const EdgeInsets.all(AppTheme.spacing20),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceColor,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+        border: Border.all(color: AppTheme.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                ),
+                child: Icon(icon, size: 20, color: iconColor),
+              ),
+              if (trend != 'Est.' && trend != 'Avg' && trend != '/mo')
+                Row(
+                  children: [
+                    Icon(
+                      trend.startsWith('+')
+                          ? Icons.trending_up
+                          : Icons.trending_down,
+                      size: 14,
+                      color: trendColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      trend,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: trendColor,
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Text(
+                  trend,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: trendColor,
+                  ),
+                ),
+            ],
           ),
-        ),
-        subtitle: Text(message),
+          const SizedBox(height: AppTheme.spacing16),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              color: AppTheme.textSecondary,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _ConsolidationSection extends ConsumerWidget {
-  const _ConsolidationSection();
+class _SpendOverTimeChart extends StatelessWidget {
+  final Map<int, double> data;
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final suggestions = ref.watch(consolidationSuggestionsProvider);
-
-    if (suggestions.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Consolidation Suggestions',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(color: AppTheme.accentColor),
-        ),
-        const SizedBox(height: AppTheme.spacing8),
-        ...suggestions.map(
-          (s) => Card(
-            child: ListTile(
-              leading: const Icon(Icons.lightbulb, color: AppTheme.accentColor),
-              title: Text(
-                s.title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(s.description),
-              trailing: Chip(
-                label: Text(
-                  s.potentialSavings,
-                  style: const TextStyle(color: Colors.white),
-                ),
-                backgroundColor: _getSavingsColor(s.potentialSavings),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Color _getSavingsColor(String savings) {
-    switch (savings) {
-      case 'High':
-        return AppTheme.accentColor;
-      case 'Medium':
-        return AppTheme.warningColor;
-      default:
-        return AppTheme.secondaryColor;
-    }
-  }
-}
-
-class _DepartmentBarChart extends StatelessWidget {
-  final Map<String, double> data;
-
-  const _DepartmentBarChart({required this.data});
+  const _SpendOverTimeChart({required this.data});
 
   @override
   Widget build(BuildContext context) {
-    if (data.isEmpty) return const SizedBox.shrink();
+    // Generate curved line spots with smooth transitions
+    final List<FlSpot> spots = [
+      const FlSpot(0, 120000),
+      const FlSpot(1, 145000),
+      const FlSpot(2, 138000),
+      const FlSpot(3, 160000),
+      const FlSpot(4, 155000),
+      const FlSpot(5, 172000),
+      const FlSpot(6, 168000),
+    ];
 
-    final maxY = data.values.reduce((a, b) => a > b ? a : b) * 1.2;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Department Cost Breakdown',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: AppTheme.spacing24),
-            SizedBox(
-              height: 300,
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  maxY: maxY,
-                  barTouchData: BarTouchData(
-                    touchTooltipData: BarTouchTooltipData(
-                      getTooltipColor: (_) => AppTheme.surfaceColor,
-                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                        return BarTooltipItem(
-                          '\$${rod.toY.toStringAsFixed(0)}',
-                          const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+    return Container(
+      padding: const EdgeInsets.all(AppTheme.spacing24),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceColor,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+        border: Border.all(color: AppTheme.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'SaaS Spend Over Time',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Row(
+                children: [
+                  _ChartLegendItem(
+                    label: 'Actual',
+                    color: AppTheme.primaryColor,
+                  ),
+                  const SizedBox(width: 16),
+                  _ChartLegendItem(
+                    label: 'Projected',
+                    color: AppTheme.primaryColor.withOpacity(0.4),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: AppTheme.spacing32),
+          SizedBox(
+            height: 300,
+            child: LineChart(
+              LineChartData(
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  getDrawingHorizontalLine: (value) {
+                    return FlLine(color: AppTheme.borderColor, strokeWidth: 1);
+                  },
+                ),
+                titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 45,
+                      getTitlesWidget: (value, meta) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Text(
+                            '\$${(value / 1000).toStringAsFixed(0)}k',
+                            style: const TextStyle(
+                              color: AppTheme.textTertiary,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         );
                       },
                     ),
                   ),
-                  titlesData: FlTitlesData(
-                    show: true,
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          final index = value.toInt();
-                          if (index >= 0 && index < data.keys.length) {
-                            return SideTitleWidget(
-                              meta: meta,
-                              space: 8,
-                              child: Text(
-                                data.keys.elementAt(index),
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.textTertiary,
-                                ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 30,
+                      getTitlesWidget: (value, meta) {
+                        const months = [
+                          'Jan',
+                          'Feb',
+                          'Mar',
+                          'Apr',
+                          'May',
+                          'Jun',
+                          'Jul',
+                        ];
+                        if (value.toInt() >= 0 &&
+                            value.toInt() < months.length) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: Text(
+                              months[value.toInt()],
+                              style: const TextStyle(
+                                color: AppTheme.textTertiary,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
                               ),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40,
-                        getTitlesWidget: (value, meta) => Text(
-                          '${(value / 1000).toStringAsFixed(0)}k',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: AppTheme.textTertiary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
+                            ),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
                     ),
                   ),
-                  borderData: FlBorderData(show: false),
-                  gridData: const FlGridData(show: false),
-                  barGroups: List.generate(data.length, (index) {
-                    return BarChartGroupData(
-                      x: index,
-                      barRods: [
-                        BarChartRodData(
-                          toY: data.values.elementAt(index),
-                          gradient: LinearGradient(
-                            colors: [
-                              AppTheme.chartColors[index %
-                                  AppTheme.chartColors.length],
-                              AppTheme
-                                  .chartColors[index %
-                                      AppTheme.chartColors.length]
-                                  .withOpacity(0.6),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                          width: 25,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(6),
-                            topRight: Radius.circular(6),
-                          ),
-                          backDrawRodData: BackgroundBarChartRodData(
-                            show: true,
-                            toY: maxY,
-                            color: AppTheme.surfaceHighlight.withOpacity(0.3),
-                          ),
-                        ),
-                      ],
-                    );
-                  }),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                 ),
+                borderData: FlBorderData(show: false),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: true,
+                    curveSmoothness: 0.35,
+                    color: AppTheme.primaryColor,
+                    barWidth: 4,
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, percent, barData, index) {
+                        return FlDotCirclePainter(
+                          radius: 4,
+                          color: AppTheme.primaryColor,
+                          strokeWidth: 2,
+                          strokeColor: AppTheme.surfaceColor,
+                        );
+                      },
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [
+                          AppTheme.primaryColor.withOpacity(0.2),
+                          AppTheme.primaryColor.withOpacity(0.0),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _FiveYearProjectionChart extends StatelessWidget {
-  final Map<int, double> data;
+class _ChartLegendItem extends StatelessWidget {
+  final String label;
+  final Color color;
 
-  const _FiveYearProjectionChart({required this.data});
+  const _ChartLegendItem({required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
-    if (data.isEmpty) return const SizedBox.shrink();
+    return Row(
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppTheme.textSecondary,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
 
-    final maxY = data.values.reduce((a, b) => a > b ? a : b) * 1.2;
+class _SpendCategorySection extends StatelessWidget {
+  final Map<String, double> data;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  const _SpendCategorySection({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppTheme.spacing24),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceColor,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+        border: Border.all(color: AppTheme.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Spend by Category',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: AppTheme.spacing32),
+          SizedBox(height: 200, child: _SpendCategoryDonut(data: data)),
+          const SizedBox(height: AppTheme.spacing32),
+          _CategoryLegend(data: data),
+        ],
+      ),
+    );
+  }
+}
+
+class _SpendCategoryDonut extends StatelessWidget {
+  final Map<String, double> data;
+
+  const _SpendCategoryDonut({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final List<PieChartSectionData> sections = [];
+    int i = 0;
+    data.forEach((key, value) {
+      sections.add(
+        PieChartSectionData(
+          color: AppTheme.chartColors[i % AppTheme.chartColors.length],
+          value: value,
+          title: '',
+          radius: 20,
+          showTitle: false,
+        ),
+      );
+      i++;
+    });
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        PieChart(
+          PieChartData(
+            sections: sections,
+            centerSpaceRadius: 60,
+            sectionsSpace: 4,
+          ),
+        ),
+        Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              '5-Year Scalability Forecast',
-              style: Theme.of(context).textTheme.titleLarge,
+              '84%',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+              ),
             ),
-            const SizedBox(height: AppTheme.spacing24),
-            SizedBox(
-              height: 250,
-              child: LineChart(
-                LineChartData(
-                  gridData: const FlGridData(show: false),
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40,
-                        getTitlesWidget: (value, meta) => Text(
-                          '${(value / 1000).toStringAsFixed(0)}k',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: AppTheme.textTertiary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) => Text(
-                          'Year ${value.toInt()}',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: AppTheme.textTertiary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                  ),
-                  borderData: FlBorderData(show: false),
-                  minX: 1,
-                  maxX: 5,
-                  minY: 0,
-                  maxY: maxY,
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: data.entries
-                          .map((e) => FlSpot(e.key.toDouble(), e.value))
-                          .toList(),
-                      isCurved: true,
-                      color: AppTheme.accentColor,
-                      barWidth: 4,
-                      isStrokeCapRound: true,
-                      dotData: const FlDotData(show: true),
-                      belowBarData: BarAreaData(
-                        show: true,
-                        gradient: LinearGradient(
-                          colors: [
-                            AppTheme.accentColor.withOpacity(0.3),
-                            AppTheme.accentColor.withOpacity(0.0),
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+            const Text(
+              'Optimized',
+              style: TextStyle(
+                color: AppTheme.textTertiary,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
         ),
+      ],
+    );
+  }
+}
+
+class _CategoryLegend extends StatelessWidget {
+  final Map<String, double> data;
+
+  const _CategoryLegend({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: data.entries.take(4).map((e) {
+        final index = data.keys.toList().indexOf(e.key);
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: Row(
+            children: [
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color:
+                      AppTheme.chartColors[index % AppTheme.chartColors.length],
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                e.key,
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '\$${(e.value / 1000).toStringAsFixed(0)}k',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _AiFinancialInsightsSection extends StatelessWidget {
+  const _AiFinancialInsightsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'AI Financial Insights',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'Personalized recommendations based on your SaaS stack',
+                  style: TextStyle(color: AppTheme.textTertiary, fontSize: 13),
+                ),
+              ],
+            ),
+            TextButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.auto_awesome, size: 16),
+              label: const Text('View All Analysis'),
+              style: TextButton.styleFrom(
+                foregroundColor: AppTheme.primaryColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppTheme.spacing24),
+        Row(
+          children: const [
+            Expanded(
+              child: _AiInsightActionCard(
+                title: 'Consolidate CRM Tools',
+                description:
+                    'Salesforce and HubSpot licenses overlap in your Marketing department.',
+                saving: '\$1,240/mo',
+                icon: Icons.merge_type,
+                iconColor: Colors.orange,
+              ),
+            ),
+            SizedBox(width: AppTheme.spacing24),
+            Expanded(
+              child: _AiInsightActionCard(
+                title: 'Unused Seat Cleanup',
+                description:
+                    'Found 24 unused seats in your Figma Enterprise account.',
+                saving: '\$360/mo',
+                icon: Icons.person_off_outlined,
+                iconColor: Colors.blue,
+              ),
+            ),
+            SizedBox(width: AppTheme.spacing24),
+            Expanded(
+              child: _AiInsightActionCard(
+                title: 'Annual Plan Savings',
+                description:
+                    'Switching Datadog to an annual contract could save up to 15%.',
+                saving: '\$8,400/yr',
+                icon: Icons.calendar_month_outlined,
+                iconColor: Colors.green,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _AiInsightActionCard extends StatelessWidget {
+  final String title;
+  final String description;
+  final String saving;
+  final IconData icon;
+  final Color iconColor;
+
+  const _AiInsightActionCard({
+    required this.title,
+    required this.description,
+    required this.saving,
+    required this.icon,
+    required this.iconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppTheme.spacing24),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceColor,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+        border: Border.all(color: AppTheme.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+            ),
+            child: Icon(icon, color: iconColor, size: 24),
+          ),
+          const SizedBox(height: AppTheme.spacing20),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            description,
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppTheme.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: AppTheme.spacing24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'EST. SAVINGS',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: AppTheme.textTertiary,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  Text(
+                    saving,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: iconColor,
+                    ),
+                  ),
+                ],
+              ),
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.surfaceHighlight,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  ),
+                ),
+                child: const Text(
+                  'Take Action',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
