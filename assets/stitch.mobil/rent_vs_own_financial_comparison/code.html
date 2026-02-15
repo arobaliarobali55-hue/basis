@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Rent vs Own Financial Comparison</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#1e3b8a",
+                "background-light": "#f6f6f8",
+                "background-dark": "#121620",
+                "surface-dark": "#1e2330",
+                "border-dark": "#2d3446",
+              },
+              fontFamily: {
+                "display": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Inter', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .comparison-gradient-saas {
+            background: linear-gradient(180deg, rgba(30, 59, 138, 0.1) 0%, rgba(30, 59, 138, 0) 100%);
+        }
+        .comparison-gradient-build {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+        }
+        .chart-grid {
+            background-image: linear-gradient(to right, #2d3446 1px, transparent 1px), linear-gradient(to bottom, #2d3446 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen pb-32">
+<!-- Header -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-border-dark px-4 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button class="p-2 -ml-2 rounded-full active:bg-slate-200 dark:active:bg-slate-800">
+<span class="material-icons text-2xl">chevron_left</span>
+</button>
+<h1 class="text-lg font-semibold tracking-tight">Financial Strategy</h1>
+</div>
+<button class="p-2 rounded-full bg-primary/10 text-primary">
+<span class="material-icons text-xl">share</span>
+</button>
+</header>
+<main class="px-4 py-6 space-y-6">
+<!-- Dashboard Top Summary -->
+<div class="space-y-2">
+<span class="text-xs font-bold uppercase tracking-widest text-primary">Comparison Analysis</span>
+<h2 class="text-2xl font-bold">Rent vs. Own</h2>
+<p class="text-sm text-slate-500 dark:text-slate-400">Total Cost of Ownership (TCO) over 5 Years</p>
+</div>
+<!-- Comparison Cards -->
+<div class="grid grid-cols-2 gap-3">
+<!-- SaaS Card -->
+<div class="bg-surface-dark border border-primary/30 rounded-xl p-4 comparison-gradient-saas relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2">
+<span class="bg-primary text-[10px] font-bold px-2 py-0.5 rounded-full text-white">OPEX</span>
+</div>
+<div class="space-y-1">
+<p class="text-xs text-slate-400">SaaS Model</p>
+<p class="text-xl font-bold">$1.2M</p>
+<p class="text-[10px] text-emerald-400 flex items-center gap-0.5">
+<span class="material-icons text-[12px]">trending_up</span>
+                        Linear Growth
+                    </p>
+</div>
+<div class="mt-4 pt-4 border-t border-white/5 space-y-2">
+<div class="flex justify-between items-center">
+<span class="text-[10px] text-slate-500">Speed</span>
+<span class="text-[10px] font-medium text-emerald-400">2 Weeks</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-[10px] text-slate-500">Monthly</span>
+<span class="text-[10px] font-medium">$20,000</span>
+</div>
+</div>
+</div>
+<!-- Custom Build Card -->
+<div class="bg-surface-dark border border-border-dark rounded-xl p-4 comparison-gradient-build relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2">
+<span class="bg-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full text-white">CAPEX</span>
+</div>
+<div class="space-y-1">
+<p class="text-xs text-slate-400">Custom Build</p>
+<p class="text-xl font-bold">$2.8M</p>
+<p class="text-[10px] text-amber-400 flex items-center gap-0.5">
+<span class="material-icons text-[12px]">schedule</span>
+                        High Upfront
+                    </p>
+</div>
+<div class="mt-4 pt-4 border-t border-white/5 space-y-2">
+<div class="flex justify-between items-center">
+<span class="text-[10px] text-slate-500">Speed</span>
+<span class="text-[10px] font-medium text-slate-300">6 Months</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-[10px] text-slate-500">Maint.</span>
+<span class="text-[10px] font-medium">$8,500</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Metric Comparison Rows -->
+<div class="bg-surface-dark border border-border-dark rounded-xl overflow-hidden">
+<div class="px-4 py-3 border-b border-border-dark bg-white/5">
+<h3 class="text-sm font-semibold">Strategic Metrics</h3>
+</div>
+<div class="divide-y divide-border-dark">
+<div class="px-4 py-3 flex justify-between items-center">
+<span class="text-xs text-slate-400">Scalability Cost</span>
+<div class="flex items-center gap-4">
+<span class="text-xs font-medium text-primary">Predictable</span>
+<div class="w-1 h-1 rounded-full bg-slate-600"></div>
+<span class="text-xs font-medium text-slate-500">Variable</span>
+</div>
+</div>
+<div class="px-4 py-3 flex justify-between items-center">
+<span class="text-xs text-slate-400">Feature Agility</span>
+<div class="flex items-center gap-4">
+<span class="text-xs font-medium text-slate-500">Vendor Map</span>
+<div class="w-1 h-1 rounded-full bg-slate-600"></div>
+<span class="text-xs font-medium text-primary">Full Control</span>
+</div>
+</div>
+<div class="px-4 py-3 flex justify-between items-center">
+<span class="text-xs text-slate-400">Resource Drain</span>
+<div class="flex items-center gap-4">
+<span class="text-xs font-medium text-emerald-400">Minimal</span>
+<div class="w-1 h-1 rounded-full bg-slate-600"></div>
+<span class="text-xs font-medium text-slate-500">High Dev Ops</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 5-Year Cost Projection Graph -->
+<div class="space-y-4">
+<h3 class="text-sm font-semibold px-1 flex items-center justify-between">
+                Cumulative Cost Visualization
+                <span class="text-[10px] font-normal text-slate-500 uppercase">Interactive Projection</span>
+</h3>
+<div class="bg-surface-dark border border-border-dark rounded-xl p-4 h-64 relative flex flex-col justify-end">
+<div class="absolute inset-0 chart-grid opacity-10 m-4"></div>
+<!-- Simple SVG Graph Representation -->
+<svg class="absolute bottom-10 left-4 right-4 h-40 w-[calc(100%-32px)] overflow-visible" viewbox="0 0 400 200">
+<!-- SaaS Line (Linear) -->
+<path d="M 0 160 L 400 40" fill="none" stroke="#1e3b8a" stroke-width="3"></path>
+<!-- Build Line (High Capex, flat opex) -->
+<path d="M 0 40 L 100 40 L 400 100" fill="none" stroke="#64748b" stroke-dasharray="4 2" stroke-width="3"></path>
+<!-- Break-even Point -->
+<circle cx="260" cy="83" fill="#1e3b8a" r="6"></circle>
+<circle class="animate-ping" cx="260" cy="83" fill="none" r="10" stroke="#1e3b8a" stroke-width="1" style="animation-duration: 3s;"></circle>
+</svg>
+<!-- Legend & Labels -->
+<div class="flex justify-between items-center mt-auto pt-4 relative z-10 border-t border-border-dark">
+<div class="flex gap-4">
+<div class="flex items-center gap-1.5">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+<span class="text-[10px] text-slate-400">SaaS</span>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="w-2.5 h-2.5 rounded-full bg-slate-500"></div>
+<span class="text-[10px] text-slate-400">Custom Build</span>
+</div>
+</div>
+<div class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">
+                        Breakeven: Month 38
+                    </div>
+</div>
+<!-- X-Axis -->
+<div class="flex justify-between px-2 mt-2 text-[10px] text-slate-600">
+<span>Year 1</span>
+<span>Year 2</span>
+<span>Year 3</span>
+<span>Year 4</span>
+<span>Year 5</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Recommendation Banner (Bottom Sticky) -->
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-background-light dark:bg-background-dark/95 backdrop-blur-lg">
+<div class="bg-primary rounded-xl p-4 shadow-xl shadow-primary/20 border border-white/10">
+<div class="flex items-start gap-4">
+<div class="bg-white/20 p-2 rounded-lg">
+<span class="material-icons text-white">insights</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between mb-1">
+<h4 class="text-sm font-bold text-white uppercase tracking-tight">AI Recommendation</h4>
+<span class="text-[10px] bg-emerald-500 text-white px-1.5 py-0.5 rounded font-bold">94% CONFIDENCE</span>
+</div>
+<p class="text-white text-base font-semibold">Continue SaaS for next 2 years</p>
+<p class="text-white/70 text-[11px] mt-1">Custom build ROI realized only after month 38. Current headcount favors OpEx efficiency.</p>
+</div>
+</div>
+<button class="w-full mt-4 py-3 bg-white text-primary font-bold rounded-lg text-sm active:scale-[0.98] transition-transform">
+                Generate Full Executive Report
+            </button>
+</div>
+</div>
+<!-- Background Images / Textures for Aesthetic Depth -->
+<div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden opacity-20">
+<div class="absolute top-[-10%] right-[-10%] w-[300px] h-[300px] bg-primary rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-5%] left-[-10%] w-[250px] h-[250px] bg-primary/40 rounded-full blur-[100px]"></div>
+</div>
+</body></html>

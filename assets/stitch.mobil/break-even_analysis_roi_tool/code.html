@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Break-even Analysis ROI Tool</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1e3b8a",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#121620",
+                        "emerald": {
+                            "500": "#10b981",
+                            "600": "#059669"
+                        }
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .chart-gradient-build {
+            background: linear-gradient(180deg, rgba(30, 59, 138, 0.2) 0%, rgba(30, 59, 138, 0) 100%);
+        }
+        .chart-gradient-saas {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0) 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+<!-- iOS Status Bar Placeholder -->
+<div class="h-12 w-full flex items-center justify-between px-6 sticky top-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md z-50">
+<span class="text-sm font-semibold">9:41</span>
+<div class="flex items-center space-x-2">
+<span class="material-icons text-sm">signal_cellular_alt</span>
+<span class="material-icons text-sm">wifi</span>
+<span class="material-icons text-sm">battery_full</span>
+</div>
+</div>
+<main class="max-w-md mx-auto pb-24">
+<!-- Header -->
+<header class="px-6 py-4">
+<div class="flex items-center justify-between mb-2">
+<button class="p-2 -ml-2 rounded-full hover:bg-primary/10 transition-colors">
+<span class="material-icons">chevron_left</span>
+</button>
+<button class="p-2 -mr-2 rounded-full hover:bg-primary/10 transition-colors">
+<span class="material-icons text-primary">share</span>
+</button>
+</div>
+<h1 class="text-2xl font-bold tracking-tight">Break-even Analysis</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Build vs. Buy Modeling</p>
+</header>
+<!-- Main Content -->
+<div class="px-4 space-y-6">
+<!-- Analysis Visualization -->
+<section class="bg-white dark:bg-slate-800/50 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between mb-6">
+<div class="flex space-x-4">
+<div class="flex items-center">
+<span class="w-3 h-3 rounded-full bg-primary mr-2"></span>
+<span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Build</span>
+</div>
+<div class="flex items-center">
+<span class="w-3 h-3 rounded-full bg-emerald-500 mr-2"></span>
+<span class="text-xs font-medium text-slate-500 uppercase tracking-wider">SaaS</span>
+</div>
+</div>
+<div class="bg-slate-100 dark:bg-slate-900 p-1 rounded-lg flex">
+<button class="px-3 py-1 text-[10px] font-bold rounded-md bg-white dark:bg-slate-800 shadow-sm">YEARLY</button>
+<button class="px-3 py-1 text-[10px] font-bold rounded-md text-slate-400">MONTHLY</button>
+</div>
+</div>
+<!-- Custom SVG Chart Visualization -->
+<div class="relative h-48 w-full mb-4">
+<svg class="w-full h-full" viewbox="0 0 400 200">
+<!-- Grid Lines -->
+<line stroke="currentColor" stroke-opacity="0.1" stroke-width="1" x1="0" x2="400" y1="180" y2="180"></line>
+<line stroke="currentColor" stroke-opacity="0.1" stroke-width="1" x1="0" x2="400" y1="130" y2="130"></line>
+<line stroke="currentColor" stroke-opacity="0.1" stroke-width="1" x1="0" x2="400" y1="80" y2="80"></line>
+<line stroke="currentColor" stroke-opacity="0.1" stroke-width="1" x1="0" x2="400" y1="30" y2="30"></line>
+<!-- SaaS Growth Line (Emerald) -->
+<path d="M0 180 L80 165 L160 145 L240 120 L320 90 L400 50" fill="none" stroke="#10b981" stroke-linecap="round" stroke-width="3"></path>
+<!-- Build Cost Line (Primary) -->
+<path d="M0 80 L80 85 L160 92 L240 100 L320 110 L400 125" fill="none" stroke="#1e3b8a" stroke-linecap="round" stroke-width="3"></path>
+<!-- Break-even vertical line -->
+<line stroke="#10b981" stroke-dasharray="4 4" stroke-width="2" x1="280" x2="280" y1="20" y2="180"></line>
+<!-- Break-even Point Marker -->
+<circle cx="280" cy="105" fill="#10b981" r="5"></circle>
+</svg>
+<!-- Chart Labels -->
+<div class="absolute bottom-0 left-0 right-0 flex justify-between text-[10px] text-slate-400 pt-2 font-medium">
+<span>Y1</span>
+<span>Y2</span>
+<span class="text-emerald-500 font-bold">Y3.2</span>
+<span>Y4</span>
+<span>Y5</span>
+</div>
+</div>
+</section>
+<!-- ROI Summary Card -->
+<section class="bg-primary rounded-xl p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-primary-100/70 text-sm font-medium uppercase tracking-widest">Projection</p>
+<h2 class="text-3xl font-bold mt-1">Break-even in 3.2 years</h2>
+</div>
+<div class="bg-white/20 backdrop-blur-md rounded-lg p-2">
+<span class="material-icons">insights</span>
+</div>
+</div>
+<div class="flex items-center space-x-4 mt-6">
+<div class="flex-1">
+<div class="flex justify-between text-xs mb-1.5 opacity-80">
+<span>Risk Score</span>
+<span class="font-bold">MODERATE</span>
+</div>
+<div class="h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 rounded-full w-[65%]"></div>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] uppercase opacity-60">Est. Savings</p>
+<p class="text-lg font-bold text-emerald-400">+$240k</p>
+</div>
+</div>
+</div>
+<!-- Abstract decorative element -->
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+</section>
+<!-- Input Form Section -->
+<section class="space-y-4">
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 px-2">Model Parameters</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-xs font-semibold px-1 text-slate-600 dark:text-slate-400">Custom Build Cost</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+<input class="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-800 rounded-lg pl-7 py-3 text-sm font-medium focus:ring-primary focus:border-primary transition-all" type="number" value="150000"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-semibold px-1 text-slate-600 dark:text-slate-400">Current SaaS Cost</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+<input class="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-800 rounded-lg pl-7 py-3 text-sm font-medium focus:ring-primary focus:border-primary transition-all" type="number" value="45000"/>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-xs font-semibold px-1 text-slate-600 dark:text-slate-400">Growth Rate</label>
+<div class="relative">
+<input class="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-800 rounded-lg pr-8 pl-3 py-3 text-sm font-medium focus:ring-primary focus:border-primary transition-all" type="number" value="15"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">%</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-semibold px-1 text-slate-600 dark:text-slate-400">Discount Rate</label>
+<div class="relative">
+<input class="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-800 rounded-lg pr-8 pl-3 py-3 text-sm font-medium focus:ring-primary focus:border-primary transition-all" type="number" value="8"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">%</span>
+</div>
+</div>
+</div>
+<!-- AI Insight Box -->
+<div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex items-start space-x-3">
+<span class="material-icons text-emerald-500 text-lg">auto_awesome</span>
+<p class="text-xs text-emerald-800 dark:text-emerald-400 leading-relaxed">
+<span class="font-bold uppercase tracking-tighter">AI Insight:</span> 
+                        Your payback period is <span class="font-bold">15% faster</span> than the industry average for Fintech SaaS transformations. Consider front-loading development to maximize long-term TCO.
+                    </p>
+</div>
+</section>
+<!-- Action Button -->
+<button class="w-full bg-primary hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/30 transition-all flex items-center justify-center space-x-2 active:scale-[0.98]">
+<span class="material-icons text-sm">refresh</span>
+<span>RECALCULATE PROJECTIONS</span>
+</button>
+</div>
+<!-- Spacer for iOS Tab Bar -->
+<div class="h-12"></div>
+</main>
+<!-- Navigation Tab Bar -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 flex justify-around items-center py-3 px-6 z-50">
+<button class="flex flex-col items-center space-y-1 text-slate-400">
+<span class="material-icons">dashboard</span>
+<span class="text-[10px] font-medium">Dashboard</span>
+</button>
+<button class="flex flex-col items-center space-y-1 text-primary">
+<span class="material-icons">analytics</span>
+<span class="text-[10px] font-bold">Analysis</span>
+</button>
+<button class="flex flex-col items-center space-y-1 text-slate-400">
+<span class="material-icons">account_balance_wallet</span>
+<span class="text-[10px] font-medium">Spend</span>
+</button>
+<button class="flex flex-col items-center space-y-1 text-slate-400">
+<span class="material-icons">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</button>
+</nav>
+<!-- Background Image / Map Reference (Abstract Graphic in this context) -->
+<div class="hidden">
+<img data-alt="Abstract financial growth line chart graphic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2ry0_EP0RIqhq_TNl6Y1ICcfu8cHpMUAvJboVWSjEeJtxPu0PlfHFcGSXAQel2Vato2vHAyskQIU0bBQgJMyPTZ7MqDUN7VIgDJU5zii1Nk0bxpFYAFH2Tef4qfT3f97uGl_T4bylKZCX5zfV9ZSja0cCw7D0WRBqzVL7UBZNlOL-5e8OkdrsNr3trqM-yHpiZn90SdHQ0ZO39PcWwaPTzD3dNQomIxw-Eb5L7srTokCRsF8BOWD59OTa7x5Oy9pPpPz2n-3q5X4"/>
+</div>
+</body></html>
