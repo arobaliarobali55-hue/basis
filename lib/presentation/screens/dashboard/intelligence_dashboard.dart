@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
+import 'package:basis/presentation/widgets/common/entry_animation.dart';
 
 class IntelligenceDashboard extends ConsumerWidget {
   const IntelligenceDashboard({super.key});
@@ -22,22 +23,34 @@ class IntelligenceDashboard extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // 3-Year Cost Projection Card
-            const _CostProjectionCard(),
+            const EntryAnimation(child: _CostProjectionCard()),
             const SizedBox(height: AppTheme.spacing16),
 
             // Waste Detection Section
-            const _WasteDetectionSection(),
+            const EntryAnimation(
+              delay: Duration(milliseconds: 100),
+              child: _WasteDetectionSection(),
+            ),
             const SizedBox(height: AppTheme.spacing16),
 
             // Consolidation Suggestions
-            const _ConsolidationSection(),
+            const EntryAnimation(
+              delay: Duration(milliseconds: 200),
+              child: _ConsolidationSection(),
+            ),
             const SizedBox(height: AppTheme.spacing24),
 
             // Advanced Intelligence Visualizations
             if (!isLoading) ...[
-              _DepartmentBarChart(data: departmentData),
+              EntryAnimation(
+                delay: const Duration(milliseconds: 300),
+                child: _DepartmentBarChart(data: departmentData),
+              ),
               const SizedBox(height: AppTheme.spacing24),
-              _FiveYearProjectionChart(data: projection),
+              EntryAnimation(
+                delay: const Duration(milliseconds: 400),
+                child: _FiveYearProjectionChart(data: projection),
+              ),
               const SizedBox(height: AppTheme.spacing32),
             ] else
               const Center(child: CircularProgressIndicator()),
