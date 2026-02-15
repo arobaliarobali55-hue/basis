@@ -477,12 +477,27 @@ class _DepartmentBarChart extends StatelessWidget {
                       barRods: [
                         BarChartRodData(
                           toY: data.values.elementAt(index),
-                          color: AppTheme
-                              .chartColors[index % AppTheme.chartColors.length],
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.chartColors[index %
+                                  AppTheme.chartColors.length],
+                              AppTheme
+                                  .chartColors[index %
+                                      AppTheme.chartColors.length]
+                                  .withOpacity(0.6),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
                           width: 25,
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(6),
                             topRight: Radius.circular(6),
+                          ),
+                          backDrawRodData: BackgroundBarChartRodData(
+                            show: true,
+                            toY: maxY,
+                            color: AppTheme.surfaceHighlight.withOpacity(0.3),
                           ),
                         ),
                       ],
