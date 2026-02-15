@@ -244,6 +244,37 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               const SizedBox(height: AppTheme.spacing24),
 
+              // Data Section
+              _SectionHeader(title: 'Data Management'),
+              Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.upload_file_outlined),
+                      title: const Text('Import Data'),
+                      subtitle: const Text('Import from CSV file'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Navigator.pushNamed(context, '/import'),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.download_outlined),
+                      title: const Text('Export Data'),
+                      subtitle: const Text('Export to CSV/JSON'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Export feature coming soon!'),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppTheme.spacing24),
+
               // Preferences Section
               _SectionHeader(title: 'Preferences'),
               Card(
