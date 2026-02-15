@@ -10,6 +10,9 @@ import 'presentation/screens/tools/add_tool_screen.dart';
 import 'presentation/screens/calculator/calculator_screen.dart';
 import 'presentation/screens/settings/settings_screen.dart';
 import 'presentation/screens/settings/data_import_screen.dart';
+import 'presentation/screens/saas_stack/saas_stack_screen.dart';
+import 'presentation/screens/ai_insights/ai_insights_screen.dart';
+import 'presentation/screens/break_even/break_even_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +46,9 @@ class BasisApp extends ConsumerWidget {
         '/calculator': (context) => const CalculatorScreen(),
         '/settings': (context) => const SettingsScreen(),
         '/import': (context) => const DataImportScreen(),
+        '/saas-stack': (context) => const SaasStackScreen(),
+        '/ai-insights': (context) => const AiInsightsScreen(),
+        '/break-even': (context) => const BreakEvenScreen(),
       },
     );
   }

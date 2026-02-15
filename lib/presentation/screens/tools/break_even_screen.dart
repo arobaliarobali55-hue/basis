@@ -101,12 +101,21 @@ class _BreakEvenScreenState extends ConsumerState<BreakEvenScreen> {
     );
   }
 
+  Widget _buildControls() {
+    // Calculate break-even for the verdict
+    final monthlyDiff = _monthlySaasCost - _monthlyMaintenance;
+    double breakEvenMonths = 0;
+    if (monthlyDiff > 0) {
+      breakEvenMonths = _upfrontBuildCost / monthlyDiff;
+    }
+    final breakEvenYears = breakEvenMonths / 12;
+
     return Container(
       padding: const EdgeInsets.all(AppTheme.spacing24),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: AppTheme.cardColor,
         borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        border: Border.all(color: AppTheme.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -290,9 +299,9 @@ class _BreakEvenScreenState extends ConsumerState<BreakEvenScreen> {
           height: 450,
           padding: const EdgeInsets.all(AppTheme.spacing24),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: AppTheme.cardColor,
             borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-            border: Border.all(color: Theme.of(context).dividerColor),
+            border: Border.all(color: AppTheme.borderColor),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,12 +329,12 @@ class _BreakEvenScreenState extends ConsumerState<BreakEvenScreen> {
           show: true,
           drawVerticalLine: true,
           getDrawingHorizontalLine: (value) => FlLine(
-            color: Theme.of(context).dividerColor,
+            color: AppTheme.borderColor,
             strokeWidth: 1,
             dashArray: [5, 5],
           ),
           getDrawingVerticalLine: (value) => FlLine(
-            color: Theme.of(context).dividerColor,
+            color: AppTheme.borderColor,
             strokeWidth: 1,
             dashArray: [5, 5],
           ),
@@ -438,9 +447,9 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppTheme.spacing20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: AppTheme.cardColor,
         borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        border: Border.all(color: AppTheme.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

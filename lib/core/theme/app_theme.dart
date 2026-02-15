@@ -22,6 +22,7 @@ class AppTheme {
     0xFF1E293B,
   ); // Slate 800 (Cards/Sidebar)
   static const Color surfaceHighlight = Color(0xFF334155); // Slate 700 (Hovers)
+  static const Color cardColor = Color(0xFF2d3548); // Card background
 
   // Text
   static const Color textPrimary = Color(0xFFF8FAFC); // Slate 50
