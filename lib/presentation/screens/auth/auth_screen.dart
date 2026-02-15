@@ -128,189 +128,264 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppTheme.spacing24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Logo & Title
-                    Text(
-                      AppConstants.appName,
-                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        color: AppTheme.primaryColor,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: AppTheme.spacing8),
-                    Text(
-                      AppConstants.appTagline,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppTheme.textSecondary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: AppTheme.spacing48),
-
-                    // Company Name (Sign Up only)
-                    if (_isSignUp) ...[
-                      TextFormField(
-                        controller: _companyController,
-                        decoration: const InputDecoration(
-                          labelText: 'Company Name',
-                          prefixIcon: Icon(Icons.business),
-                        ),
-                        validator: (value) {
-                          if (_isSignUp &&
-                              (value == null || value.trim().isEmpty)) {
-                            return 'Please enter your company name';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppTheme.spacing16),
-                    ],
-
-                    // Email
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        // Better email validation
-                        final emailRegex = RegExp(
-                          r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                        );
-                        if (!emailRegex.hasMatch(value)) {
-                          return 'Please enter a valid email address';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: AppTheme.spacing16),
-
-                    // Password
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                          ),
-                          onPressed: () {
-                            setState(
-                              () => _obscurePassword = !_obscurePassword,
-                            );
-                          },
-                        ),
-                      ),
-                      obscureText: _obscurePassword,
-                      onChanged: (value) {
-                        if (_isSignUp) {
-                          setState(
-                            () {},
-                          ); // Rebuild to update strength indicator
-                        }
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        if (_isSignUp && value.length < 6) {
-                          return 'Password must be at least 6 characters';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    // Password Strength Indicator (Sign Up only)
-                    if (_isSignUp && _passwordController.text.isNotEmpty) ...[
-                      const SizedBox(height: AppTheme.spacing8),
-                      _PasswordStrengthIndicator(
-                        strength: _calculatePasswordStrength(
-                          _passwordController.text,
-                        ),
-                      ),
-                    ],
-
-                    const SizedBox(height: AppTheme.spacing8),
-
-                    // Forgot Password (Sign In only)
-                    if (!_isSignUp)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const ForgotPasswordScreen(),
-                              ),
-                            );
-                          },
-                          child: const Text('Forgot Password?'),
-                        ),
-                      ),
-
-                    const SizedBox(height: AppTheme.spacing16),
-
-                    // Submit Button
-                    SizedBox(
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _handleAuth,
-                        child: _isLoading
-                            ? const SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : Text(_isSignUp ? 'Create Account' : 'Sign In'),
-                      ),
-                    ),
-                    const SizedBox(height: AppTheme.spacing16),
-
-                    // Toggle Sign In / Sign Up
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _isSignUp = !_isSignUp;
-                          _formKey.currentState?.reset();
-                        });
-                      },
-                      child: Text(
-                        _isSignUp
-                            ? 'Already have an account? Sign In'
-                            : 'Don\'t have an account? Sign Up',
-                      ),
-                    ),
+      body: Stack(
+        children: [
+          // Premium Background Decoration
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppTheme.backgroundColor,
+                    AppTheme.surfaceColor.withValues(alpha: 0.5),
+                    AppTheme.backgroundColor,
                   ],
                 ),
               ),
             ),
           ),
-        ),
+          Positioned(
+            top: -100,
+            right: -100,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppTheme.primaryColor.withValues(alpha: 0.05),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppTheme.spacing24),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Logo & Title
+                        Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(AppTheme.spacing16),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppTheme.surfaceColor,
+                              border: Border.all(
+                                color: AppTheme.primaryColor.withValues(
+                                  alpha: 0.2,
+                                ),
+                                width: 2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.primaryColor.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  blurRadius: 20,
+                                  spreadRadius: 5,
+                                ),
+                              ],
+                            ),
+                            child: Image.asset(
+                              'assets/icon.png',
+                              height: 64,
+                              width: 64,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Icon(
+                                    Icons.account_balance_wallet,
+                                    size: 48,
+                                    color: AppTheme.primaryColor,
+                                  ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppTheme.spacing24),
+                        Text(
+                          AppConstants.appName,
+                          style: Theme.of(context).textTheme.displaySmall
+                              ?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -1,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppTheme.spacing8),
+                        Text(
+                          AppConstants.appTagline,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: AppTheme.textSecondary,
+                                letterSpacing: 0.5,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppTheme.spacing48),
+
+                        // Company Name (Sign Up only)
+                        if (_isSignUp) ...[
+                          TextFormField(
+                            controller: _companyController,
+                            decoration: const InputDecoration(
+                              labelText: 'Company Name',
+                              prefixIcon: Icon(Icons.business),
+                            ),
+                            validator: (value) {
+                              if (_isSignUp &&
+                                  (value == null || value.trim().isEmpty)) {
+                                return 'Please enter your company name';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: AppTheme.spacing16),
+                        ],
+
+                        // Email
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
+                            prefixIcon: Icon(Icons.email_outlined),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            // Better email validation
+                            final emailRegex = RegExp(
+                              r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                            );
+                            if (!emailRegex.hasMatch(value)) {
+                              return 'Please enter a valid email address';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppTheme.spacing16),
+
+                        // Password
+                        TextFormField(
+                          controller: _passwordController,
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                              ),
+                              onPressed: () {
+                                setState(
+                                  () => _obscurePassword = !_obscurePassword,
+                                );
+                              },
+                            ),
+                          ),
+                          obscureText: _obscurePassword,
+                          onChanged: (value) {
+                            if (_isSignUp) {
+                              setState(
+                                () {},
+                              ); // Rebuild to update strength indicator
+                            }
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                            if (_isSignUp && value.length < 6) {
+                              return 'Password must be at least 6 characters';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        // Password Strength Indicator (Sign Up only)
+                        if (_isSignUp &&
+                            _passwordController.text.isNotEmpty) ...[
+                          const SizedBox(height: AppTheme.spacing8),
+                          _PasswordStrengthIndicator(
+                            strength: _calculatePasswordStrength(
+                              _passwordController.text,
+                            ),
+                          ),
+                        ],
+
+                        const SizedBox(height: AppTheme.spacing8),
+
+                        // Forgot Password (Sign In only)
+                        if (!_isSignUp)
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ForgotPasswordScreen(),
+                                  ),
+                                );
+                              },
+                              child: const Text('Forgot Password?'),
+                            ),
+                          ),
+
+                        const SizedBox(height: AppTheme.spacing16),
+
+                        // Submit Button
+                        SizedBox(
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: _isLoading ? null : _handleAuth,
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    _isSignUp ? 'Create Account' : 'Sign In',
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: AppTheme.spacing16),
+
+                        // Toggle Sign In / Sign Up
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _isSignUp = !_isSignUp;
+                              _formKey.currentState?.reset();
+                            });
+                          },
+                          child: Text(
+                            _isSignUp
+                                ? 'Already have an account? Sign In'
+                                : 'Don\'t have an account? Sign Up',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

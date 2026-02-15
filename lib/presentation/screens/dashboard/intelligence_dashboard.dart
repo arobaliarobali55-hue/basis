@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
 import 'package:basis/presentation/widgets/common/entry_animation.dart';
+import 'ai_report_screen.dart';
 
 class IntelligenceDashboard extends ConsumerWidget {
   const IntelligenceDashboard({super.key});
@@ -17,6 +18,17 @@ class IntelligenceDashboard extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Cost Intelligence')),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AiReportScreen()),
+          );
+        },
+        icon: const Icon(Icons.psychology),
+        label: const Text('Generate Deep AI Audit'),
+        backgroundColor: AppTheme.accentColor,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppTheme.spacing16),
         child: Column(

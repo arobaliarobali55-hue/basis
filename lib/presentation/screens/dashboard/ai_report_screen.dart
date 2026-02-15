@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:basis/presentation/widgets/common/entry_animation.dart';
 import '../../providers/app_providers.dart';
 import '../../../core/theme/app_theme.dart';
 
@@ -49,32 +50,85 @@ class _AiReportScreenState extends ConsumerState<AiReportScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('AI Optimization Report')),
       body: _isLoading
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Analyzing your tech stack with AI...'),
+                  Container(
+                    width: 80,
+                    height: 80,
+                    padding: const EdgeInsets.all(AppTheme.spacing16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceColor,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                          blurRadius: 30,
+                          spreadRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: const CircularProgressIndicator(strokeWidth: 3),
+                  ),
+                  const SizedBox(height: AppTheme.spacing24),
+                  Text(
+                    'Analyzing your tech stack with AI...',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             )
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Markdown(
-                data: _report ?? 'No data.',
-                styleSheet: MarkdownStyleSheet(
-                  h1: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryColor,
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(AppTheme.spacing24),
+              child: EntryAnimation(
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppTheme.spacing24),
+                    child: MarkdownBody(
+                      data: _report ?? 'No data.',
+                      selectable: true,
+                      styleSheet: MarkdownStyleSheet(
+                        h1: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              height: 2.0,
+                            ),
+                        h2: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: AppTheme.accentColor,
+                          fontWeight: FontWeight.bold,
+                          height: 1.8,
+                        ),
+                        p: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: AppTheme.textSecondary,
+                          height: 1.6,
+                        ),
+                        listBullet: const TextStyle(
+                          color: AppTheme.primaryColor,
+                        ),
+                        blockquote: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(
+                              color: AppTheme.textTertiary,
+                              fontStyle: FontStyle.italic,
+                            ),
+                        blockquoteDecoration: BoxDecoration(
+                          color: AppTheme.surfaceColor,
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.radiusMedium,
+                          ),
+                          border: const Border(
+                            left: BorderSide(
+                              color: AppTheme.primaryColor,
+                              width: 4,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  h2: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.accentColor,
-                  ),
-                  p: const TextStyle(fontSize: 16),
                 ),
               ),
             ),
