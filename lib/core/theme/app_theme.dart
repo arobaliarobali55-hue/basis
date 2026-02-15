@@ -4,9 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 /// Premium dark theme for Basis
 /// Designed for financial sophistication and B2B professionalism
 class AppTheme {
-  // Color Palette - Premium Dark
-  static const Color primaryColor = Color(0xFF6366F1); // Indigo
-  static const Color secondaryColor = Color(0xFF8B5CF6); // Purple
+  // Color Palette - Stitch Design (CFO Dashboard)
+  static const Color primaryColor = Color(0xFF1d3c8b); // Deep Blue (Stitch)
+  static const Color secondaryColor = Color(0xFF3b82f6); // Bright Blue
   static const Color accentColor = Color(
     0xFF10B981,
   ); // Emerald (for positive metrics)
@@ -15,18 +15,18 @@ class AppTheme {
 
   // Chart Colors
   static const List<Color> chartColors = [
-    Color(0xFF6366F1), // Indigo
-    Color(0xFF8B5CF6), // Purple
+    Color(0xFF1d3c8b), // Primary Blue
+    Color(0xFF3b82f6), // Secondary Blue
     Color(0xFF10B981), // Emerald
-    Color(0xFFF43F5E), // Rose
-    Color(0xFFF59E0B), // Amber
-    Color(0xFF0EA5E9), // Sky
+    Color(0xFFf43f5e), // Rose
+    Color(0xFFf59e0b), // Amber
+    Color(0xFF8b5cf6), // Purple
   ];
 
-  // Background Colors
-  static const Color backgroundColor = Color(0xFF0F172A); // Slate 900
-  static const Color surfaceColor = Color(0xFF1E293B); // Slate 800
-  static const Color cardColor = Color(0xFF334155); // Slate 700
+  // Background Colors - Stitch Dark Theme
+  static const Color backgroundColor = Color(0xFF121620); // Deep dark (Stitch)
+  static const Color surfaceColor = Color(0xFF1e2330); // Surface dark
+  static const Color cardColor = Color(0xFF2d3548); // Card dark
 
   // Text Colors
   static const Color textPrimary = Color(0xFFF1F5F9); // Slate 100
@@ -34,8 +34,8 @@ class AppTheme {
   static const Color textTertiary = Color(0xFF64748B); // Slate 500
 
   // Border & Divider
-  static const Color borderColor = Color(0xFF475569); // Slate 600
-  static const Color dividerColor = Color(0xFF334155); // Slate 700
+  static const Color borderColor = Color(0xFF2d3548); // Border dark
+  static const Color dividerColor = Color(0xFF2d3548); // Divider dark
 
   static ThemeData get darkTheme {
     return ThemeData(
@@ -260,14 +260,14 @@ class AppTheme {
     );
   }
 
-  // Light Theme Colors
-  static const Color lightPrimaryColor = Color(0xFF6366F1); // Indigo
-  static const Color lightSecondaryColor = Color(0xFF8B5CF6); // Purple
+  // Light Theme Colors - Stitch Design
+  static const Color lightPrimaryColor = Color(0xFF1d3c8b); // Deep Blue (Stitch)
+  static const Color lightSecondaryColor = Color(0xFF3b82f6); // Bright Blue
   static const Color lightAccentColor = Color(0xFF10B981); // Emerald
   static const Color lightErrorColor = Color(0xFFEF4444); // Red
   static const Color lightWarningColor = Color(0xFFF59E0B); // Amber
 
-  static const Color lightBackgroundColor = Color(0xFFF8FAFC); // Slate 50
+  static const Color lightBackgroundColor = Color(0xFFf6f6f8); // Light gray (Stitch)
   static const Color lightSurfaceColor = Color(0xFFFFFFFF); // White
   static const Color lightCardColor = Color(0xFFF1F5F9); // Slate 100
 
@@ -275,7 +275,7 @@ class AppTheme {
   static const Color lightTextSecondary = Color(0xFF475569); // Slate 600
   static const Color lightTextTertiary = Color(0xFF64748B); // Slate 500
 
-  static const Color lightBorderColor = Color(0xFFCBD5E1); // Slate 300
+  static const Color lightBorderColor = Color(0xFFE2E8F0); // Slate 200
   static const Color lightDividerColor = Color(0xFFE2E8F0); // Slate 200
 
   static ThemeData get lightTheme {

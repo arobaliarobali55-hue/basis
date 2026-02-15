@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Break-even Analysis Modeling | CFO Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1d3c8b",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#0a0d14",
+                        "accent-emerald": "#10b981",
+                        "card-dark": "#161b2a",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .chart-gradient-build {
+            background: linear-gradient(180deg, rgba(29, 60, 139, 0.2) 0%, rgba(29, 60, 139, 0) 100%);
+        }
+        .chart-gradient-saas {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0) 100%);
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #1d3c8b;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+<!-- Top Navigation Bar -->
+<nav class="border-b border-primary/20 bg-card-dark px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white text-sm">analytics</span>
+</div>
+<span class="text-xl font-bold tracking-tight">FinScale <span class="text-primary">Pro</span></span>
+</div>
+<div class="hidden md:flex items-center gap-4 text-sm text-slate-400">
+<span>Projects</span>
+<span class="material-icons text-xs">chevron_right</span>
+<span>Infrastructure</span>
+<span class="material-icons text-xs">chevron_right</span>
+<span class="text-slate-100">SaaS Audit 2024</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 rounded-lg transition-all text-sm font-semibold border border-primary/30">
+<span class="material-icons text-sm">file_download</span>
+                Export Report
+            </button>
+<button class="bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg transition-all text-sm font-semibold shadow-lg shadow-primary/20">
+                Save Scenario
+            </button>
+<div class="h-8 w-[1px] bg-slate-700 mx-2"></div>
+<div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Professional headshot of a business executive" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoEmbTN07949Q5_yEe4sZSl-OY5eShLNin6TzFHoEceor47qTEvJ50RXh6vYoBYvWP7Wayg3iToi20aMOHpqaSnN1zA3u2RWGJgqNbyKGekr1TiT6QRwt6Ir23FVnXgJCeucnp1VBRiqTD7ALmx2l-i5yHv6pfQtoADFSNXUDB35PbSxOkhwQicV9iyLjOHVKVggfyIhI-XD7a8syZG8rFJGKQr_EvvUXSCXfhIb5oLcybzks_U_GIVM_BImcAw1mxus93Ub5ZxCk"/>
+</div>
+</div>
+</nav>
+<main class="p-6 max-w-[1600px] mx-auto grid grid-cols-12 gap-6">
+<!-- Left Sidebar: Configuration Inputs -->
+<aside class="col-span-12 lg:col-span-4 space-y-6">
+<div class="bg-card-dark rounded-xl border border-slate-800 p-6 shadow-xl">
+<h2 class="text-lg font-bold mb-6 flex items-center gap-2">
+<span class="material-icons text-primary">tune</span>
+                    Model Parameters
+                </h2>
+<!-- Custom Build Section -->
+<section class="mb-8">
+<h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Build Configuration</h3>
+<div class="space-y-5">
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<label class="text-slate-300">Initial Dev CapEx</label>
+<span class="font-mono text-primary">$450,000</span>
+</div>
+<input class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<label class="text-slate-300">Annual Maintenance (%)</label>
+<span class="font-mono text-primary">15%</span>
+</div>
+<input class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<label class="text-slate-300">Total Engineering Headcount</label>
+<span class="font-mono text-primary">4 FTE</span>
+</div>
+<input class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+</div>
+</div>
+</section>
+<!-- SaaS Alternative Section -->
+<section class="mb-8 pt-6 border-t border-slate-800">
+<h3 class="text-xs font-black text-accent-emerald uppercase tracking-widest mb-4">SaaS Alternative</h3>
+<div class="space-y-5">
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<label class="text-slate-300">Annual License Fee</label>
+<span class="font-mono text-accent-emerald">$125,000</span>
+</div>
+<input class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-accent-emerald" type="range"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<label class="text-slate-300">Seat Growth Rate (YoY)</label>
+<span class="font-mono text-accent-emerald">12%</span>
+</div>
+<input class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-accent-emerald" type="range"/>
+</div>
+</div>
+</section>
+<!-- Macro Financials -->
+<section class="pt-6 border-t border-slate-800">
+<h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Financial Levers</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-3 bg-background-dark rounded-lg border border-slate-800">
+<label class="block text-[10px] text-slate-500 uppercase mb-1">Discount Rate (WACC)</label>
+<input class="bg-transparent border-none p-0 text-slate-100 font-mono focus:ring-0 w-full" type="text" value="8.5%"/>
+</div>
+<div class="p-3 bg-background-dark rounded-lg border border-slate-800">
+<label class="block text-[10px] text-slate-500 uppercase mb-1">Projection Term</label>
+<select class="bg-transparent border-none p-0 text-slate-100 font-mono focus:ring-0 w-full appearance-none">
+<option>5 Years</option>
+<option>10 Years</option>
+</select>
+</div>
+</div>
+</section>
+</div>
+</aside>
+<!-- Right Side: Visualization and Summary -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<!-- Analysis Graph Card -->
+<div class="bg-card-dark rounded-xl border border-slate-800 p-6 shadow-xl relative overflow-hidden">
+<div class="flex justify-between items-start mb-10">
+<div>
+<h2 class="text-xl font-bold">Cumulative Cost Comparison</h2>
+<p class="text-slate-400 text-sm">Break-even simulation over a 5-year horizon</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="text-xs text-slate-400">Build Internal</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-accent-emerald"></div>
+<span class="text-xs text-slate-400">Enterprise SaaS</span>
+</div>
+</div>
+</div>
+<!-- Simulated Graph -->
+<div class="relative h-[400px] w-full mt-4 flex items-end justify-between px-4">
+<!-- Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between py-2 pointer-events-none opacity-10">
+<div class="w-full border-t border-slate-100"></div>
+<div class="w-full border-t border-slate-100"></div>
+<div class="w-full border-t border-slate-100"></div>
+<div class="w-full border-t border-slate-100"></div>
+<div class="w-full border-t border-slate-100"></div>
+</div>
+<!-- Chart Content (Simplified Visual Representation) -->
+<svg class="w-full h-full overflow-visible" viewbox="0 0 800 350">
+<!-- Build Line (Primary) -->
+<path d="M 0 320 Q 200 280, 400 240 T 800 120" fill="none" stroke="#1d3c8b" stroke-linecap="round" stroke-width="4"></path>
+<!-- SaaS Line (Emerald) -->
+<path d="M 0 350 Q 200 300, 400 240 T 800 40" fill="none" stroke="#10b981" stroke-linecap="round" stroke-width="4"></path>
+<!-- Break-even Point -->
+<circle cx="400" cy="240" fill="#1d3c8b" r="8" stroke="#0a0d14" stroke-width="2"></circle>
+<circle cx="400" cy="240" fill="#1d3c8b" fill-opacity="0.2" r="14"></circle>
+<!-- Vertical Marker -->
+<line opacity="0.3" stroke="#1d3c8b" stroke-dasharray="8,8" stroke-width="1" x1="400" x2="400" y1="0" y2="350"></line>
+<!-- Annotations -->
+<text fill="#fff" font-size="12" font-weight="bold" x="410" y="235">Break-even: Year 3.2</text>
+</svg>
+<!-- Bottom Labels -->
+<div class="absolute -bottom-6 left-0 right-0 flex justify-between text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+<span>Initiation</span>
+<span>Year 1</span>
+<span>Year 2</span>
+<span class="text-primary font-black">Year 3</span>
+<span>Year 4</span>
+<span>Year 5</span>
+</div>
+</div>
+<!-- Legend / Timeline -->
+<div class="mt-12 flex items-center gap-1">
+<div class="flex-1 h-2 rounded-l-full bg-primary/40 relative group cursor-help">
+<div class="absolute -top-6 left-0 text-[10px] text-slate-500">PHASE 1: DEV</div>
+</div>
+<div class="flex-1 h-2 bg-primary/60 relative group cursor-help">
+<div class="absolute -top-6 left-0 text-[10px] text-slate-500 uppercase">Phase 2: Launch</div>
+</div>
+<div class="flex-1 h-2 bg-primary relative group cursor-help">
+<div class="absolute -top-6 left-0 text-[10px] text-primary font-bold">ROI INFLECTION</div>
+<div class="absolute top-4 left-1/2 -translate-x-1/2 w-4 h-4 bg-primary rotate-45 border-4 border-card-dark"></div>
+</div>
+<div class="flex-1 h-2 bg-accent-emerald/60 relative group cursor-help">
+<div class="absolute -top-6 left-0 text-[10px] text-slate-500 uppercase">Growth Stage</div>
+</div>
+<div class="flex-1 h-2 rounded-r-full bg-accent-emerald relative group cursor-help">
+<div class="absolute -top-6 left-0 text-[10px] text-accent-emerald font-bold">MAX SAVINGS</div>
+</div>
+</div>
+</div>
+<!-- Verdict Card -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Main Verdict -->
+<div class="md:col-span-2 bg-gradient-to-br from-primary/20 to-card-dark rounded-xl border border-primary/40 p-6 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden shadow-2xl">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+<div class="text-center md:text-left">
+<span class="text-primary text-xs font-bold uppercase tracking-widest px-3 py-1 bg-primary/20 rounded-full inline-block mb-3">Investment Verdict</span>
+<h3 class="text-4xl font-extrabold text-white leading-none">3.2 Years</h3>
+<p class="text-slate-400 mt-2 text-sm max-w-[240px]">Estimated timeline to recapture initial build investment through SaaS displacement.</p>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-4 w-full">
+<div class="p-4 bg-background-dark/50 rounded-lg border border-slate-800">
+<span class="text-[10px] text-slate-500 uppercase block mb-1">Total NPV</span>
+<span class="text-xl font-bold text-accent-emerald">+$284k</span>
+</div>
+<div class="p-4 bg-background-dark/50 rounded-lg border border-slate-800">
+<span class="text-[10px] text-slate-500 uppercase block mb-1">5yr IRR</span>
+<span class="text-xl font-bold text-accent-emerald">24.2%</span>
+</div>
+</div>
+</div>
+<!-- Risk Score Indicator -->
+<div class="bg-card-dark rounded-xl border border-slate-800 p-6 flex flex-col items-center justify-center text-center">
+<span class="text-[10px] text-slate-500 uppercase tracking-widest mb-4">Risk Profile</span>
+<div class="relative w-28 h-28 flex items-center justify-center">
+<!-- Simple Circular Gauge -->
+<svg class="w-full h-full -rotate-90">
+<circle class="text-slate-800" cx="56" cy="56" fill="transparent" r="48" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-accent-emerald" cx="56" cy="56" fill="transparent" r="48" stroke="currentColor" stroke-dasharray="301.59" stroke-dashoffset="120" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-2xl font-black text-white leading-none">62</span>
+<span class="text-[10px] text-accent-emerald font-bold">LOW-MED</span>
+</div>
+</div>
+<p class="text-[11px] text-slate-500 mt-4 leading-relaxed">Model confidence based on 10,000 Monte Carlo simulations.</p>
+</div>
+</div>
+<!-- TCO Data Table (Mini) -->
+<div class="bg-card-dark rounded-xl border border-slate-800 overflow-hidden">
+<table class="w-full text-left text-sm">
+<thead>
+<tr class="bg-slate-900/50">
+<th class="px-6 py-4 font-bold text-slate-400 uppercase text-[10px] tracking-wider">Metrics Comparison</th>
+<th class="px-6 py-4 font-bold text-primary uppercase text-[10px] tracking-wider text-right">Build (Custom)</th>
+<th class="px-6 py-4 font-bold text-accent-emerald uppercase text-[10px] tracking-wider text-right">Buy (SaaS)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-800">
+<tr>
+<td class="px-6 py-4 text-slate-300">Initial Setup Cost</td>
+<td class="px-6 py-4 font-mono text-right">$450,000</td>
+<td class="px-6 py-4 font-mono text-right text-accent-emerald">$12,000</td>
+</tr>
+<tr>
+<td class="px-6 py-4 text-slate-300">Annual Run Rate (Y1)</td>
+<td class="px-6 py-4 font-mono text-right">$67,500</td>
+<td class="px-6 py-4 font-mono text-right">$125,000</td>
+</tr>
+<tr>
+<td class="px-6 py-4 text-slate-300">5-Year TCO</td>
+<td class="px-6 py-4 font-mono text-right font-bold text-white">$787,500</td>
+<td class="px-6 py-4 font-mono text-right font-bold text-white">$1,072,400</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+<!-- Contextual Tooltip (Hidden by default, used for interaction simulation) -->
+<div class="fixed bottom-6 right-6 bg-slate-900 border border-slate-700 rounded-lg p-4 shadow-2xl max-w-xs pointer-events-none opacity-90">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-icons text-primary text-sm">lightbulb</span>
+<span class="text-xs font-bold text-slate-100 uppercase tracking-wide">CFO Insight</span>
+</div>
+<p class="text-xs text-slate-400 leading-relaxed">Increasing headcount by <span class="text-primary font-bold">1 FTE</span> pushes break-even back by <span class="text-white font-bold">7 months</span> but may improve system agility by 15%.</p>
+</div>
+</body></html>

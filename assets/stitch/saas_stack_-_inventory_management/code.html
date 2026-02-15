@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SaaS Stack - Inventory Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1d3c8b",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#121620",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(29, 60, 139, 0.2);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(29, 60, 139, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex">
+<!-- Sidebar -->
+<aside class="w-64 border-r border-slate-200 dark:border-primary/20 flex flex-col fixed inset-y-0 left-0 bg-white dark:bg-background-dark z-50">
+<div class="p-6 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons-round text-white text-xl">layers</span>
+</div>
+<span class="text-xl font-extrabold tracking-tight text-primary dark:text-white">StackVault</span>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded text-slate-500 hover:bg-slate-50 dark:hover:bg-primary/10 dark:text-slate-400 transition-colors" href="#">
+<span class="material-icons-round text-[20px]">dashboard</span>
+<span class="font-medium">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded bg-primary text-white transition-colors" href="#">
+<span class="material-icons-round text-[20px]">inventory_2</span>
+<span class="font-medium">Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded text-slate-500 hover:bg-slate-50 dark:hover:bg-primary/10 dark:text-slate-400 transition-colors" href="#">
+<span class="material-icons-round text-[20px]">payments</span>
+<span class="font-medium">Spend Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded text-slate-500 hover:bg-slate-50 dark:hover:bg-primary/10 dark:text-slate-400 transition-colors" href="#">
+<span class="material-icons-round text-[20px]">trending_down</span>
+<span class="font-medium">Optimization</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded text-slate-500 hover:bg-slate-50 dark:hover:bg-primary/10 dark:text-slate-400 transition-colors" href="#">
+<span class="material-icons-round text-[20px]">shield</span>
+<span class="font-medium">Security &amp; Compliance</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-primary/20">
+<div class="bg-primary/5 dark:bg-primary/10 rounded-lg p-4">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-semibold text-primary dark:text-blue-400 uppercase tracking-wider">Usage</span>
+<span class="text-xs font-bold text-primary dark:text-blue-400">84%</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[84%]"></div>
+</div>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2">12 new seats added this month</p>
+</div>
+</div>
+<div class="p-4 border-t border-slate-200 dark:border-primary/20">
+<div class="flex items-center gap-3 px-2">
+<img class="w-9 h-9 rounded-full object-cover" data-alt="Professional headshot of a CFO" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAo9AGb7rQ8HWlSWaaWRgkA9tqJNrZ4oX9c2mUpMrtNvzkB1kEc7iBTBruyLDdLrpCXDcG0Qooee3PVjNNCJb1U0qhTZ11-VaLkV30xXL-RA9ELamLLxHr7zOIcUsQd54WblZZNvbdHtEotkjKyYap4I-ShGaXoWFSjkAOXYkpAlrq2BUgvDxcBL0cTPHnevntijU1ZVwcYqc6939YolCfXmIIkZ2mIYydAkx3ISUQMun9AJV0uOlzyiMbOa1o2B4MQgDLmrhx6UgY"/>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold truncate">Marcus Chen</p>
+<p class="text-[11px] text-slate-500 dark:text-slate-400">Chief Financial Officer</p>
+</div>
+<span class="material-icons-round text-slate-400 text-sm">settings</span>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 ml-64 min-h-screen flex flex-col">
+<!-- Top Bar -->
+<header class="h-16 border-b border-slate-200 dark:border-primary/20 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-40 px-8 flex items-center justify-between">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-96">
+<span class="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+<input class="w-full pl-10 pr-4 py-2 rounded-lg bg-slate-100 dark:bg-primary/10 border-none text-sm focus:ring-2 focus:ring-primary transition-all" placeholder="Search tools, vendors, or licenses..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-primary/30 rounded-lg text-sm font-semibold hover:bg-slate-50 dark:hover:bg-primary/10 transition-colors">
+<span class="material-icons-round text-lg">file_download</span>
+                    Export CSV
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:shadow-lg hover:shadow-primary/20 transition-all">
+<span class="material-icons-round text-lg">add</span>
+                    Add New Tool
+                </button>
+<div class="h-6 w-px bg-slate-200 dark:bg-primary/20 mx-2"></div>
+<div class="relative">
+<span class="material-icons-round text-slate-400 hover:text-primary cursor-pointer">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-8 space-y-8">
+<!-- Breadcrumbs & Header -->
+<div class="flex justify-between items-end">
+<div class="space-y-1">
+<div class="flex items-center gap-2 text-xs font-semibold text-slate-400 uppercase tracking-widest">
+<span>Management</span>
+<span class="material-icons-round text-[12px]">chevron_right</span>
+<span class="text-primary dark:text-blue-400">Inventory</span>
+</div>
+<h1 class="text-3xl font-extrabold tracking-tight">Software Inventory</h1>
+</div>
+<div class="flex bg-slate-100 dark:bg-primary/10 p-1 rounded-lg">
+<button class="p-2 rounded-md bg-white dark:bg-primary shadow-sm text-primary dark:text-white">
+<span class="material-icons-round text-lg">view_list</span>
+</button>
+<button class="p-2 rounded-md text-slate-400 hover:text-primary transition-colors">
+<span class="material-icons-round text-lg">grid_view</span>
+</button>
+</div>
+</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/20 p-6 rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+<span class="material-icons-round text-blue-600 dark:text-blue-400">payments</span>
+</div>
+<span class="text-xs font-bold text-green-500 flex items-center gap-1">
+<span class="material-icons-round text-sm">trending_up</span> 4.2%
+                        </span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Monthly Burn Rate</p>
+<p class="text-3xl font-extrabold mt-1 tracking-tight">$42,850.00</p>
+</div>
+<div class="bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/20 p-6 rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+<span class="material-icons-round text-indigo-600 dark:text-indigo-400">calendar_today</span>
+</div>
+<span class="text-xs font-bold text-slate-500">FY 2024 Projection</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Estimated Annual Cost</p>
+<p class="text-3xl font-extrabold mt-1 tracking-tight">$514,200.00</p>
+</div>
+<div class="bg-white dark:bg-primary/5 border border-red-100 dark:border-red-900/20 p-6 rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+<span class="material-icons-round text-red-600 dark:text-red-400">warning_amber</span>
+</div>
+<span class="px-2 py-0.5 bg-red-500 text-[10px] font-bold text-white rounded-full uppercase">Action Required</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Identified Waste</p>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-extrabold mt-1 tracking-tight text-red-500">$8,420.00</p>
+<span class="text-xs font-semibold text-slate-400">/ mo</span>
+</div>
+</div>
+</div>
+<!-- Filters -->
+<div class="flex flex-wrap items-center gap-4 bg-white dark:bg-primary/5 p-4 rounded-xl border border-slate-200 dark:border-primary/20">
+<div class="flex items-center gap-2">
+<span class="material-icons-round text-slate-400 text-sm">filter_alt</span>
+<span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Filters</span>
+</div>
+<div class="h-6 w-px bg-slate-200 dark:bg-primary/20 mx-2"></div>
+<select class="bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-primary/30 rounded-lg text-xs font-semibold py-2 px-3 focus:ring-primary focus:border-primary">
+<option>All Departments</option>
+<option>Engineering</option>
+<option>Marketing</option>
+<option>Sales</option>
+</select>
+<select class="bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-primary/30 rounded-lg text-xs font-semibold py-2 px-3 focus:ring-primary focus:border-primary">
+<option>All Risk Levels</option>
+<option>High (Waste)</option>
+<option>Medium (Near Renewal)</option>
+<option>Low (Active)</option>
+</select>
+<select class="bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-primary/30 rounded-lg text-xs font-semibold py-2 px-3 focus:ring-primary focus:border-primary">
+<option>Cost Range: Any</option>
+<option>$0 - $1,000</option>
+<option>$1,000 - $10,000</option>
+<option>$10,000+</option>
+</select>
+<div class="ml-auto flex items-center gap-3">
+<span class="text-xs font-medium text-slate-500">Showing 42 tools</span>
+<button class="text-xs font-bold text-primary hover:underline">Clear all</button>
+</div>
+</div>
+<!-- Inventory Table -->
+<div class="bg-white dark:bg-primary/5 rounded-xl border border-slate-200 dark:border-primary/20 overflow-hidden shadow-sm">
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-primary/10 border-b border-slate-200 dark:border-primary/20">
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tool Name</th>
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Plan</th>
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Department</th>
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Users</th>
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Monthly Cost</th>
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Annual Cost</th>
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Next Renewal</th>
+<th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-primary/10">
+<!-- Table Row 1 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-white p-1.5 rounded-lg border border-slate-100 flex items-center justify-center">
+<img class="w-full h-full object-contain" data-alt="Slack logo minimalist icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-X63_u40442eW5o4kOpFb4blrzsNdrJ2Z0tbpGuSmnA7ngjwJ4zztlsyuYGE6NPv1K19tpKBOlqDiIXPQn04muS16eA2iYe4h_6mSejfaHSIgdQDbRRcOEoPHNyG_lf90tqfB9w2_dXueZeU8FTTFlZkr6ukq9O8hWv02o5nDESogit3wu88VxCUk52BRgPB_H-XoBrKHVReGIZLJSpuyiIRZYgpNKY353YvQtWDcKCfsoN6MZpQB9K-jFNbh8RUBFNiheyRmIZY"/>
+</div>
+<div>
+<p class="text-sm font-bold">Slack</p>
+<p class="text-[11px] text-slate-500">Communication</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Enterprise Grid</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-slate-100 dark:bg-primary/20 rounded text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Engineering</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold">842</span>
+<span class="text-[10px] text-slate-400">/ 1000</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="text-sm font-bold">$12,630</p>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="text-sm font-bold">$151,560</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-[10px] font-bold rounded uppercase">
+<span class="w-1 h-1 bg-green-500 rounded-full"></span> Active
+                                    </span>
+</td>
+<td class="px-6 py-4 text-xs font-medium">Nov 12, 2024</td>
+<td class="px-6 py-4">
+<div class="flex items-center justify-center gap-2">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors">
+<span class="material-icons-round text-lg">analytics</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors">
+<span class="material-icons-round text-lg">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Table Row 2 - Waste Risk -->
+<tr class="hover:bg-slate-50 dark:hover:bg-primary/5 transition-colors group bg-red-50/20 dark:bg-red-900/5">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-white p-1.5 rounded-lg border border-slate-100 flex items-center justify-center">
+<img class="w-full h-full object-contain" data-alt="Salesforce logo abstract icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGjXp7P0OTvh5FR_tnHWNAkBwvYaq7IM8ofIZTv8GtfJ7_-JEGjKsjLkVVyAj9BQikt6KlB3j-R35VOqhqwuJIqkpUeJl0c9Yp_eFaJbzBesyMHrathixoI_TYtHJOVL-lhXBqSZFWI8ULxT2ewQGEzukWX3TbtwXPMPBkbXKHtuUb2Ek8WKCxagKNkwZkh_uBUz3PW3crhlHJ8_VRtt4m6IwoiI0NERt1kbueCb4-THNfzzjOX4ucB6RrpadDjgjime5peNkWLVY"/>
+</div>
+<div>
+<p class="text-sm font-bold">Salesforce</p>
+<p class="text-[11px] text-slate-500">CRM / Sales</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Unlimited Tier</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-slate-100 dark:bg-primary/20 rounded text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Sales</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-red-500">124</span>
+<span class="text-[10px] text-slate-400">/ 250</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="text-sm font-bold">$18,750</p>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="text-sm font-bold">$225,000</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 text-[10px] font-bold rounded uppercase">
+<span class="w-1 h-1 bg-red-500 rounded-full animate-pulse"></span> Waste
+                                    </span>
+</td>
+<td class="px-6 py-4 text-xs font-medium">Jan 04, 2025</td>
+<td class="px-6 py-4">
+<div class="flex items-center justify-center gap-2">
+<button class="p-1.5 text-primary bg-primary/10 rounded-md hover:bg-primary hover:text-white transition-all">
+<span class="material-icons-round text-lg">insights</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors">
+<span class="material-icons-round text-lg">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Table Row 3 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-white p-1.5 rounded-lg border border-slate-100 flex items-center justify-center">
+<img class="w-full h-full object-contain" data-alt="Figma logo colorful brand icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6QmNgUL97L0Zw8U7KNgdtTrZ3rCOM-RjcM8gqhrrKRXqdACRlQ9st78ZQzJVpIFt1O5ZoYopltcvBj4lxbbQZuf7aZDZ7pNbLJVRBJkM7Sdl-1i93vEYv9JKVi8yEpmj1d4Z-AOz2LBgfjl7H4wFTssVR7z2ewd-lzO6jpLrZvEiDaEGAVDriZFgnoYV32P9tfYiLyJ6l7xSJ3r0UmP3YltfOFUy0eHC7---8-LZGwzNTvnzIi8oPOi35xQi4PBLYktyvL7wuBGg"/>
+</div>
+<div>
+<p class="text-sm font-bold">Figma</p>
+<p class="text-[11px] text-slate-500">Design</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Organization</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-slate-100 dark:bg-primary/20 rounded text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Marketing</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold">45</span>
+<span class="text-[10px] text-slate-400">/ 50</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="text-sm font-bold">$2,025</p>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="text-sm font-bold">$24,300</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 text-[10px] font-bold rounded uppercase">
+<span class="w-1 h-1 bg-yellow-500 rounded-full"></span> Risk
+                                    </span>
+</td>
+<td class="px-6 py-4 text-xs font-medium">Feb 28, 2024</td>
+<td class="px-6 py-4">
+<div class="flex items-center justify-center gap-2">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors">
+<span class="material-icons-round text-lg">analytics</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors">
+<span class="material-icons-round text-lg">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Table Row 4 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-white p-1.5 rounded-lg border border-slate-100 flex items-center justify-center">
+<img class="w-full h-full object-contain" data-alt="Zoom logo communications software" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9AETdVdvuTUYbyekwOUFnkkQ5rhKARFrTHFZQ3QC4330oBNhnlUYkcDjc43O59I2hXxQjTitKY8ksAWqDa2Lnl0oK-9xT7lgtZcpUoLBhTHaDUDw6c5Fg43TsuZVEkrL_HzBB4GF4GdgABp8OohNi1YwrBcXolb5j9LWBhO7sUiKOCziJi03SU3GJwYMxadavS7VCjXALGRjbj4Q7bpSJ4aXcKG3PsvMG8B_BhXHXbafFDMhbeE8uKj5Hyb9tmvOWRebZcygqbUk"/>
+</div>
+<div>
+<p class="text-sm font-bold">Zoom</p>
+<p class="text-[11px] text-slate-500">Communication</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Business</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-slate-100 dark:bg-primary/20 rounded text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Operations</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold">210</span>
+<span class="text-[10px] text-slate-400">/ 220</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="text-sm font-bold">$4,200</p>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="text-sm font-bold">$50,400</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-[10px] font-bold rounded uppercase">
+<span class="w-1 h-1 bg-green-500 rounded-full"></span> Active
+                                    </span>
+</td>
+<td class="px-6 py-4 text-xs font-medium">May 15, 2024</td>
+<td class="px-6 py-4">
+<div class="flex items-center justify-center gap-2">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors">
+<span class="material-icons-round text-lg">analytics</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors">
+<span class="material-icons-round text-lg">edit</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-slate-200 dark:border-primary/20 bg-slate-50 dark:bg-primary/5 flex items-center justify-between">
+<span class="text-xs font-medium text-slate-500">Showing 1-10 of 42 tools</span>
+<div class="flex items-center gap-2">
+<button class="p-2 border border-slate-200 dark:border-primary/20 rounded hover:bg-white dark:hover:bg-primary/20 transition-all text-slate-400 disabled:opacity-50">
+<span class="material-icons-round text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-primary text-white text-xs font-bold">1</button>
+<button class="w-8 h-8 rounded hover:bg-white dark:hover:bg-primary/20 text-xs font-bold">2</button>
+<button class="w-8 h-8 rounded hover:bg-white dark:hover:bg-primary/20 text-xs font-bold">3</button>
+<span class="text-slate-400">...</span>
+<button class="w-8 h-8 rounded hover:bg-white dark:hover:bg-primary/20 text-xs font-bold">5</button>
+<button class="p-2 border border-slate-200 dark:border-primary/20 rounded hover:bg-white dark:hover:bg-primary/20 transition-all text-slate-400">
+<span class="material-icons-round text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Optimization Alerts -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-8">
+<div class="bg-primary text-white rounded-xl p-6 relative overflow-hidden">
+<div class="relative z-10 flex gap-6">
+<div class="p-4 bg-white/20 rounded-xl backdrop-blur-sm self-start">
+<span class="material-icons-round text-3xl">lightbulb</span>
+</div>
+<div>
+<h3 class="text-lg font-bold mb-1">Optimization Insight</h3>
+<p class="text-blue-100 text-sm leading-relaxed mb-4">You have 126 unused seats across Salesforce and Zoom. Consolidating these could save your organization <span class="font-bold text-white">$2,140 per month</span>.</p>
+<button class="px-4 py-2 bg-white text-primary text-xs font-bold rounded-lg hover:bg-blue-50 transition-colors">View Recommendations</button>
+</div>
+</div>
+<div class="absolute -right-8 -bottom-8 opacity-10">
+<span class="material-icons-round text-[160px]">savings</span>
+</div>
+</div>
+<div class="border border-slate-200 dark:border-primary/20 bg-white dark:bg-primary/5 rounded-xl p-6">
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">Renewal Timeline</h3>
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="flex-shrink-0 w-12 text-center">
+<p class="text-[10px] font-bold uppercase text-red-500">FEB</p>
+<p class="text-xl font-bold">28</p>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold">Figma (Organization Plan)</p>
+<p class="text-xs text-slate-500">Estimated renewal: $24,300.00</p>
+</div>
+<button class="text-xs font-bold text-primary dark:text-blue-400 hover:underline">Prepare Review</button>
+</div>
+<div class="h-px bg-slate-100 dark:bg-primary/10"></div>
+<div class="flex items-center gap-4">
+<div class="flex-shrink-0 w-12 text-center">
+<p class="text-[10px] font-bold uppercase text-slate-400">MAR</p>
+<p class="text-xl font-bold">12</p>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold">Atlassian (Jira/Confluence)</p>
+<p class="text-xs text-slate-500">Estimated renewal: $18,400.00</p>
+</div>
+<button class="text-xs font-bold text-primary dark:text-blue-400 hover:underline">Review Details</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
