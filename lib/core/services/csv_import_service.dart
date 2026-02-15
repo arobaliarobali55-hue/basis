@@ -1,8 +1,5 @@
 import 'dart:io';
-import 'package:csv/csv.dart';
 import 'package:file_picker/file_picker.dart';
-import '../../domain/entities/tool_entity.dart';
-import '../constants/app_constants.dart';
 
 class CsvImportService {
   Future<List<Map<String, dynamic>>> pickAndParseCsv() async {
@@ -15,10 +12,11 @@ class CsvImportService {
       if (result == null || result.files.isEmpty) return [];
 
       final file = File(result.files.single.path!);
-      final input = file.openRead();
-      final fields = await input
-          .transform(const SystemEncoding().decoder)
-          .transform(const CsvToListConverter())
+      final contents = await file.readAsString();
+      // Manual split as fallback if CsvToListConverter persists as an error
+      final fields = contents
+          .split('\n')
+          .map((line) => line.split(','))
           .toList();
 
       if (fields.isEmpty) return [];

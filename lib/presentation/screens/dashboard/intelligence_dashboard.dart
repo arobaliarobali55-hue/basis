@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
-import '../../../core/services/consolidation_service.dart';
 
 class IntelligenceDashboard extends ConsumerWidget {
   const IntelligenceDashboard({super.key});
@@ -65,7 +64,7 @@ class _CostProjectionCard extends ConsumerWidget {
                   maxY: (projection[3] ?? 1000) * 1.2,
                   barTouchData: BarTouchData(
                     touchTooltipData: BarTouchTooltipData(
-                      tooltipBgColor: AppTheme.surfaceColor,
+                      getTooltipColor: (_) => AppTheme.surfaceColor,
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
                         return BarTooltipItem(
                           '\$${rod.toY.toStringAsFixed(0)}',
@@ -103,7 +102,7 @@ class _CostProjectionCard extends ConsumerWidget {
                               text = '';
                           }
                           return SideTitleWidget(
-                            axisSide: meta.axisSide,
+                            meta: meta,
                             space: 4,
                             child: Text(text, style: style),
                           );
@@ -230,7 +229,7 @@ class _WarningCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppTheme.errorColor.withOpacity(0.1),
+      color: AppTheme.errorColor.withValues(alpha: 0.1),
       child: ListTile(
         leading: Icon(icon, color: AppTheme.errorColor),
         title: Text(

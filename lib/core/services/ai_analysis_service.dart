@@ -1,6 +1,5 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../../domain/entities/tool_entity.dart';
-import '../constants/app_constants.dart';
 
 class AiAnalysisService {
   final GenerativeModel _model;

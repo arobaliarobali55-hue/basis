@@ -13,7 +13,7 @@ import '../../core/services/break_even_service.dart';
 import '../../core/services/csv_import_service.dart';
 import '../../core/services/ai_analysis_service.dart';
 
-// ==================== REPOSITORY PROVIDERS ====================
+// = REPOSITORY PROVIDERS =
 
 /// Supabase client provider
 final supabaseClientProvider = Provider<SupabaseClient>((ref) {
@@ -26,7 +26,7 @@ final supabaseRepositoryProvider = Provider<SupabaseRepository>((ref) {
   return SupabaseRepository(client);
 });
 
-// ==================== AUTH PROVIDERS ====================
+// = AUTH PROVIDERS =
 
 /// Current user provider
 final currentUserProvider = StreamProvider<User?>((ref) {

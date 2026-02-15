@@ -4,8 +4,6 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
 import '../../widgets/metric_card.dart';
-import '../../../core/services/consolidation_service.dart';
-import 'ai_report_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
