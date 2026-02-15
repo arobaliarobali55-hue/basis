@@ -13,6 +13,16 @@ class AppTheme {
   static const Color errorColor = Color(0xFFEF4444); // Red (for warnings)
   static const Color warningColor = Color(0xFFF59E0B); // Amber
 
+  // Chart Colors
+  static const List<Color> chartColors = [
+    Color(0xFF6366F1), // Indigo
+    Color(0xFF8B5CF6), // Purple
+    Color(0xFF10B981), // Emerald
+    Color(0xFFF43F5E), // Rose
+    Color(0xFFF59E0B), // Amber
+    Color(0xFF0EA5E9), // Sky
+  ];
+
   // Background Colors
   static const Color backgroundColor = Color(0xFF0F172A); // Slate 900
   static const Color surfaceColor = Color(0xFF1E293B); // Slate 800

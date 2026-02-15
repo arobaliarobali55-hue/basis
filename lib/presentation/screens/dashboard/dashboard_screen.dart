@@ -13,14 +13,26 @@ class DashboardScreen extends ConsumerWidget {
     final toolsAsync = ref.watch(toolsProvider);
     final monthlyCost = ref.watch(totalMonthlyCostProvider);
     final yearlyCost = ref.watch(totalYearlyCostProvider);
-    final projection = ref.watch(threeYearProjectionProvider);
+    final projection = ref.watch(fiveYearProjectionProvider);
+    final costPerEmployee = ref.watch(costPerEmployeeProvider);
     final monthlyData = ref.watch(monthlyProjectionProvider);
 
     final isLoading = toolsAsync.isLoading;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/icon.png',
+              height: 32,
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.account_balance_wallet),
+            ),
+            const SizedBox(width: AppTheme.spacing12),
+            const Text('Basis AI'),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
@@ -85,11 +97,22 @@ class DashboardScreen extends ConsumerWidget {
                         const SizedBox(width: AppTheme.spacing16),
                         Expanded(
                           child: MetricCard(
-                            title: '3-Year Total',
-                            value: projection['total'] ?? 0,
+                            title: '5-Year Total',
+                            value: projection[5] ?? 0,
                             icon: Icons.trending_up,
                             iconColor: AppTheme.accentColor,
                             subtitle: 'With growth projections',
+                            isLoading: isLoading,
+                          ),
+                        ),
+                        const SizedBox(width: AppTheme.spacing16),
+                        Expanded(
+                          child: MetricCard(
+                            title: 'Cost/Employee',
+                            value: costPerEmployee,
+                            icon: Icons.person,
+                            iconColor: AppTheme.secondaryColor,
+                            subtitle: 'Monthly spend per head',
                             isLoading: isLoading,
                           ),
                         ),
@@ -99,29 +122,52 @@ class DashboardScreen extends ConsumerWidget {
 
                   return Column(
                     children: [
-                      MetricCard(
-                        title: 'Monthly Cost',
-                        value: monthlyCost,
-                        icon: Icons.calendar_today,
-                        iconColor: AppTheme.primaryColor,
-                        isLoading: isLoading,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: MetricCard(
+                              title: 'Monthly Cost',
+                              value: monthlyCost,
+                              icon: Icons.calendar_today,
+                              iconColor: AppTheme.primaryColor,
+                              isLoading: isLoading,
+                            ),
+                          ),
+                          const SizedBox(width: AppTheme.spacing16),
+                          Expanded(
+                            child: MetricCard(
+                              title: 'Yearly Cost',
+                              value: yearlyCost,
+                              icon: Icons.calendar_month,
+                              iconColor: AppTheme.secondaryColor,
+                              isLoading: isLoading,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: AppTheme.spacing16),
-                      MetricCard(
-                        title: 'Yearly Cost',
-                        value: yearlyCost,
-                        icon: Icons.calendar_month,
-                        iconColor: AppTheme.secondaryColor,
-                        isLoading: isLoading,
-                      ),
-                      const SizedBox(height: AppTheme.spacing16),
-                      MetricCard(
-                        title: '3-Year Total',
-                        value: projection['total'] ?? 0,
-                        icon: Icons.trending_up,
-                        iconColor: AppTheme.accentColor,
-                        subtitle: 'With growth projections',
-                        isLoading: isLoading,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: MetricCard(
+                              title: '5-Year Total',
+                              value: projection[5] ?? 0,
+                              icon: Icons.trending_up,
+                              iconColor: AppTheme.accentColor,
+                              isLoading: isLoading,
+                            ),
+                          ),
+                          const SizedBox(width: AppTheme.spacing16),
+                          Expanded(
+                            child: MetricCard(
+                              title: 'Cost/Employee',
+                              value: costPerEmployee,
+                              icon: Icons.person,
+                              iconColor: AppTheme.secondaryColor,
+                              isLoading: isLoading,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   );

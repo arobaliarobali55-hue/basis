@@ -31,14 +31,26 @@ class CostCalculatorService {
     });
   }
 
-  /// Calculate projected cost for the next 3 years
-  /// Returns a map with Year 1, Year 2, Year 3 totals
-  Map<int, double> calculateThreeYearProjection(List<ToolEntity> tools) {
+  /// Calculate projected cost for the next 5 years
+  /// Returns a map with Year 1 through Year 5 totals
+  Map<int, double> calculateFiveYearProjection(List<ToolEntity> tools) {
     return {
       1: _calculateProjectedYearlyTotal(tools, 1),
       2: _calculateProjectedYearlyTotal(tools, 2),
       3: _calculateProjectedYearlyTotal(tools, 3),
+      4: _calculateProjectedYearlyTotal(tools, 4),
+      5: _calculateProjectedYearlyTotal(tools, 5),
     };
+  }
+
+  /// Calculate cost breakdown by department
+  Map<String, double> calculateDepartmentBreakdown(List<ToolEntity> tools) {
+    final breakdown = <String, double>{};
+    for (final tool in tools) {
+      final cost = tool.monthlyPrice * tool.seats;
+      breakdown[tool.department] = (breakdown[tool.department] ?? 0) + cost;
+    }
+    return breakdown;
   }
 
   /// Helper to calculate projected cost for a specific future year

@@ -9,6 +9,7 @@ class UserSettingsModel extends UserSettingsEntity {
     required super.theme,
     required super.currency,
     required super.dateFormat,
+    super.companySize = 1,
     required super.createdAt,
     required super.updatedAt,
   });
@@ -21,6 +22,7 @@ class UserSettingsModel extends UserSettingsEntity {
       theme: json['theme'] as String,
       currency: json['currency'] as String,
       dateFormat: json['date_format'] as String,
+      companySize: json['company_size'] as int? ?? 1,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
@@ -34,6 +36,7 @@ class UserSettingsModel extends UserSettingsEntity {
       'theme': theme,
       'currency': currency,
       'date_format': dateFormat,
+      'company_size': companySize,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -46,12 +49,18 @@ class UserSettingsModel extends UserSettingsEntity {
       'theme': theme,
       'currency': currency,
       'date_format': dateFormat,
+      'company_size': companySize,
     };
   }
 
   /// Convert to JSON for update (without id, user_id, created_at)
   Map<String, dynamic> toUpdateJson() {
-    return {'theme': theme, 'currency': currency, 'date_format': dateFormat};
+    return {
+      'theme': theme,
+      'currency': currency,
+      'date_format': dateFormat,
+      'company_size': companySize,
+    };
   }
 
   /// Create from entity
@@ -87,6 +96,7 @@ class UserSettingsModel extends UserSettingsEntity {
     String? theme,
     String? currency,
     String? dateFormat,
+    int? companySize,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -96,6 +106,7 @@ class UserSettingsModel extends UserSettingsEntity {
       theme: theme ?? this.theme,
       currency: currency ?? this.currency,
       dateFormat: dateFormat ?? this.dateFormat,
+      companySize: companySize ?? this.companySize,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

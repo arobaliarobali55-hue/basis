@@ -7,6 +7,7 @@ class ToolEntity {
   final double monthlyPrice;
   final int seats;
   final int assignedSeats;
+  final String department;
   final String billingType; // 'monthly' or 'yearly'
   final double growthRate; // percentage (e.g., 15.0 for 15%)
   final DateTime createdAt;
@@ -16,6 +17,7 @@ class ToolEntity {
     required this.userId,
     required this.toolName,
     required this.category,
+    this.department = 'General',
     required this.monthlyPrice,
     required this.seats,
     this.assignedSeats = 0,
@@ -84,6 +86,7 @@ class ToolEntity {
     String? userId,
     String? toolName,
     String? category,
+    String? department,
     double? monthlyPrice,
     int? seats,
     int? assignedSeats,
@@ -96,6 +99,7 @@ class ToolEntity {
       userId: userId ?? this.userId,
       toolName: toolName ?? this.toolName,
       category: category ?? this.category,
+      department: department ?? this.department,
       monthlyPrice: monthlyPrice ?? this.monthlyPrice,
       seats: seats ?? this.seats,
       assignedSeats: assignedSeats ?? this.assignedSeats,

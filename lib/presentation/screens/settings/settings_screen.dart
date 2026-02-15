@@ -225,6 +225,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         user.userMetadata?['company_name'] ?? 'Not set',
                       ),
                     ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.groups_outlined),
+                      title: const Text('Company Size'),
+                      subtitle: Text(
+                        settingsAsync.when(
+                          data: (s) => '${s?.companySize ?? 1} employees',
+                          loading: () => '...',
+                          error: (_, __) => '1 employee',
+                        ),
+                      ),
+                      trailing: const Icon(Icons.edit_outlined),
+                      onTap: () => _showCompanySizePicker(),
+                    ),
                   ],
                 ),
               ),
@@ -409,6 +423,52 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             },
           );
         },
+      ),
+    );
+  }
+
+  void _showCompanySizePicker() {
+    final controller = TextEditingController(
+      text: ref.read(userSettingsProvider).value?.companySize.toString() ?? '1',
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Company Size'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Total Employees',
+            suffixText: 'employees',
+          ),
+          keyboardType: TextInputType.number,
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final size = int.tryParse(controller.text);
+              if (size != null && size > 0) {
+                try {
+                  final settings = ref.read(userSettingsProvider).value;
+                  if (settings != null) {
+                    final updated = settings.copyWith(companySize: size);
+                    await ref.read(updateUserSettingsProvider)(updated);
+                    if (mounted) Navigator.pop(context);
+                  }
+                } catch (e) {
+                  // Error handled by provider/repo
+                }
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
       ),
     );
   }

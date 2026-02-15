@@ -7,6 +7,7 @@ class UserSettingsEntity extends Equatable {
   final String theme;
   final String currency;
   final String dateFormat;
+  final int companySize;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -16,6 +17,7 @@ class UserSettingsEntity extends Equatable {
     required this.theme,
     required this.currency,
     required this.dateFormat,
+    this.companySize = 1,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -26,6 +28,7 @@ class UserSettingsEntity extends Equatable {
     String? theme,
     String? currency,
     String? dateFormat,
+    int? companySize,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -35,6 +38,7 @@ class UserSettingsEntity extends Equatable {
       theme: theme ?? this.theme,
       currency: currency ?? this.currency,
       dateFormat: dateFormat ?? this.dateFormat,
+      companySize: companySize ?? this.companySize,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -47,6 +51,7 @@ class UserSettingsEntity extends Equatable {
     theme,
     currency,
     dateFormat,
+    companySize,
     createdAt,
     updatedAt,
   ];

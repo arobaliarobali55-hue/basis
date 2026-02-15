@@ -157,14 +157,46 @@ final totalYearlyCostProvider = Provider<double>((ref) {
   );
 });
 
-/// 3-year projection provider
-final threeYearProjectionProvider = Provider<Map<int, double>>((ref) {
+/// 5-year projection provider
+final fiveYearProjectionProvider = Provider<Map<int, double>>((ref) {
   final toolsAsync = ref.watch(toolsProvider);
   final calculator = ref.watch(costCalculatorServiceProvider);
   return toolsAsync.when(
-    data: (tools) => calculator.calculateThreeYearProjection(tools),
-    loading: () => {1: 0, 2: 0, 3: 0},
-    error: (_, __) => {1: 0, 2: 0, 3: 0},
+    data: (tools) => calculator.calculateFiveYearProjection(tools),
+    loading: () => {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+    error: (_, __) => {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+  );
+});
+
+/// Deprecated: keeping ThreeYear alias for compatibility or removing if safe
+final threeYearProjectionProvider = Provider<Map<int, double>>((ref) {
+  final projection = ref.watch(fiveYearProjectionProvider);
+  return {1: projection[1] ?? 0, 2: projection[2] ?? 0, 3: projection[3] ?? 0};
+});
+
+/// Cost per employee provider
+final costPerEmployeeProvider = Provider<double>((ref) {
+  final toolsAsync = ref.watch(toolsProvider);
+  final settingsAsync = ref.watch(userSettingsProvider);
+  final monthlyCost = ref.watch(totalMonthlyCostProvider);
+
+  final companySize = settingsAsync.when(
+    data: (s) => s?.companySize ?? 1,
+    loading: () => 1,
+    error: (_, __) => 1,
+  );
+
+  return monthlyCost / (companySize > 0 ? companySize : 1);
+});
+
+/// Department breakdown provider
+final departmentBreakdownProvider = Provider<Map<String, double>>((ref) {
+  final toolsAsync = ref.watch(toolsProvider);
+  final calculator = ref.watch(costCalculatorServiceProvider);
+  return toolsAsync.when(
+    data: (tools) => calculator.calculateDepartmentBreakdown(tools),
+    loading: () => {},
+    error: (_, __) => {},
   );
 });
 

@@ -21,6 +21,7 @@ class _AddToolScreenState extends ConsumerState<AddToolScreen> {
   final _seatsController = TextEditingController(); // [RESTORED]
   final _growthRateController = TextEditingController(); // [RESTORED]
   final _assignedSeatsController = TextEditingController();
+  final _departmentController = TextEditingController(text: 'General');
 
   String _selectedCategory = AppConstants.toolCategories.first;
   String _selectedBillingType = AppConstants.billingMonthly;
@@ -33,6 +34,7 @@ class _AddToolScreenState extends ConsumerState<AddToolScreen> {
     _seatsController.dispose();
     _assignedSeatsController.dispose(); // [NEW]
     _growthRateController.dispose();
+    _departmentController.dispose();
     super.dispose();
   }
 
@@ -61,6 +63,9 @@ class _AddToolScreenState extends ConsumerState<AddToolScreen> {
         userId: userId,
         toolName: _toolNameController.text.trim(),
         category: _selectedCategory,
+        department: _departmentController.text.trim().isEmpty
+            ? 'General'
+            : _departmentController.text.trim(),
         monthlyPrice: double.parse(_monthlyPriceController.text),
         seats: seats,
         assignedSeats: assignedSeats, // [NEW]
@@ -143,6 +148,17 @@ class _AddToolScreenState extends ConsumerState<AddToolScreen> {
                     setState(() => _selectedCategory = value);
                   }
                 },
+              ),
+              const SizedBox(height: AppTheme.spacing16),
+
+              // Department
+              TextFormField(
+                controller: _departmentController,
+                decoration: const InputDecoration(
+                  labelText: 'Department',
+                  hintText: 'e.g., Engineering, Marketing, Sales',
+                  prefixIcon: Icon(Icons.business),
+                ),
               ),
               const SizedBox(height: AppTheme.spacing16),
 
