@@ -18,8 +18,9 @@ class _AddToolScreenState extends ConsumerState<AddToolScreen> {
   final _formKey = GlobalKey<FormState>();
   final _toolNameController = TextEditingController();
   final _monthlyPriceController = TextEditingController();
-  final _seatsController = TextEditingController();
-  final _growthRateController = TextEditingController();
+  final _seatsController = TextEditingController(); // [RESTORED]
+  final _growthRateController = TextEditingController(); // [RESTORED]
+  final _assignedSeatsController = TextEditingController();
 
   String _selectedCategory = AppConstants.toolCategories.first;
   String _selectedBillingType = AppConstants.billingMonthly;
@@ -30,6 +31,7 @@ class _AddToolScreenState extends ConsumerState<AddToolScreen> {
     _toolNameController.dispose();
     _monthlyPriceController.dispose();
     _seatsController.dispose();
+    _assignedSeatsController.dispose(); // [NEW]
     _growthRateController.dispose();
     super.dispose();
   }
@@ -47,13 +49,21 @@ class _AddToolScreenState extends ConsumerState<AddToolScreen> {
         throw Exception('User not authenticated');
       }
 
+      // Default assigned seats to total seats if not provided
+      final seats = int.parse(_seatsController.text);
+      final assignedSeatsText = _assignedSeatsController.text.trim();
+      final assignedSeats = assignedSeatsText.isEmpty
+          ? seats
+          : int.parse(assignedSeatsText);
+
       final tool = ToolModel(
         id: const Uuid().v4(),
         userId: userId,
         toolName: _toolNameController.text.trim(),
         category: _selectedCategory,
         monthlyPrice: double.parse(_monthlyPriceController.text),
-        seats: int.parse(_seatsController.text),
+        seats: seats,
+        assignedSeats: assignedSeats, // [NEW]
         billingType: _selectedBillingType,
         growthRate: double.parse(_growthRateController.text),
         createdAt: DateTime.now(),
@@ -140,7 +150,7 @@ class _AddToolScreenState extends ConsumerState<AddToolScreen> {
               TextFormField(
                 controller: _monthlyPriceController,
                 decoration: const InputDecoration(
-                  labelText: 'Monthly Price',
+                  labelText: 'Monthly Price (Per Seat)',
                   hintText: '0.00',
                   prefixIcon: Icon(Icons.attach_money),
                 ),
@@ -163,26 +173,53 @@ class _AddToolScreenState extends ConsumerState<AddToolScreen> {
               ),
               const SizedBox(height: AppTheme.spacing16),
 
-              // Seats
-              TextFormField(
-                controller: _seatsController,
-                decoration: const InputDecoration(
-                  labelText: 'Number of Seats',
-                  hintText: '0',
-                  prefixIcon: Icon(Icons.people),
-                ),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter number of seats';
-                  }
-                  final seats = int.tryParse(value);
-                  if (seats == null || seats < 0) {
-                    return 'Please enter a valid number';
-                  }
-                  return null;
-                },
+              // Row for Seats and Assigned Seats
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _seatsController,
+                      decoration: const InputDecoration(
+                        labelText: 'Total Seats',
+                        hintText: '0',
+                        prefixIcon: Icon(Icons.event_seat),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Required';
+                        }
+                        final seats = int.tryParse(value);
+                        if (seats == null || seats < 0) {
+                          return 'Invalid';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: AppTheme.spacing16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _assignedSeatsController,
+                      decoration: const InputDecoration(
+                        labelText: 'Active Users',
+                        hintText: 'Optional',
+                        prefixIcon: Icon(Icons.people),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return null;
+                        final assigned = int.tryParse(value);
+                        final total = int.tryParse(_seatsController.text) ?? 0;
+                        if (assigned == null || assigned < 0) return 'Invalid';
+                        if (assigned > total) return '> Total';
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: AppTheme.spacing16),
 

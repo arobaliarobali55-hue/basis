@@ -6,6 +6,7 @@ class ToolEntity {
   final String category;
   final double monthlyPrice;
   final int seats;
+  final int assignedSeats;
   final String billingType; // 'monthly' or 'yearly'
   final double growthRate; // percentage (e.g., 15.0 for 15%)
   final DateTime createdAt;
@@ -17,6 +18,7 @@ class ToolEntity {
     required this.category,
     required this.monthlyPrice,
     required this.seats,
+    this.assignedSeats = 0,
     required this.billingType,
     required this.growthRate,
     required this.createdAt,
@@ -63,6 +65,12 @@ class ToolEntity {
       warnings.add('Zero seats allocated - potential unused subscription');
     }
 
+    if (assignedSeats < seats) {
+      final unused = seats - assignedSeats;
+      // Format as integer if whole number
+      warnings.add('$unused unused licenses detected');
+    }
+
     if (growthRate > 20.0) {
       warnings.add('Growth rate exceeds 20% - review pricing strategy');
     }
@@ -78,6 +86,7 @@ class ToolEntity {
     String? category,
     double? monthlyPrice,
     int? seats,
+    int? assignedSeats,
     String? billingType,
     double? growthRate,
     DateTime? createdAt,
@@ -89,6 +98,7 @@ class ToolEntity {
       category: category ?? this.category,
       monthlyPrice: monthlyPrice ?? this.monthlyPrice,
       seats: seats ?? this.seats,
+      assignedSeats: assignedSeats ?? this.assignedSeats,
       billingType: billingType ?? this.billingType,
       growthRate: growthRate ?? this.growthRate,
       createdAt: createdAt ?? this.createdAt,

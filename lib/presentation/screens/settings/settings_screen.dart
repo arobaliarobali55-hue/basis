@@ -254,7 +254,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Theme changed to ${value ? 'light' : 'dark'} mode'),
+                                  content: Text(
+                                    'Theme changed to ${value ? 'light' : 'dark'} mode',
+                                  ),
                                   backgroundColor: AppTheme.accentColor,
                                   duration: const Duration(seconds: 2),
                                 ),

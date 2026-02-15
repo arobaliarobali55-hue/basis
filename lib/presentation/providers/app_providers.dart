@@ -6,6 +6,10 @@ import '../../data/models/tool_model.dart';
 import '../../data/models/user_settings_model.dart';
 import '../../domain/usecases/finance_engine.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/services/cost_calculator_service.dart';
+import '../../core/services/hidden_cost_detector_service.dart';
+import '../../core/services/consolidation_service.dart';
+import '../../core/services/break_even_service.dart';
 
 // ==================== REPOSITORY PROVIDERS ====================
 
@@ -98,11 +102,34 @@ final deleteToolProvider = Provider<Future<void> Function(String)>((ref) {
 
 // ==================== FINANCE PROVIDERS ====================
 
+// ==================== INTELLIGENCE SERVICES PROVIDERS ====================
+
+final costCalculatorServiceProvider = Provider<CostCalculatorService>((ref) {
+  return CostCalculatorService();
+});
+
+final hiddenCostDetectorServiceProvider = Provider<HiddenCostDetectorService>((
+  ref,
+) {
+  return HiddenCostDetectorService();
+});
+
+final consolidationServiceProvider = Provider<ConsolidationService>((ref) {
+  return ConsolidationService();
+});
+
+final breakEvenServiceProvider = Provider<BreakEvenService>((ref) {
+  return BreakEvenService();
+});
+
+// ==================== FINANCE PROVIDERS ====================
+
 /// Total monthly cost provider
 final totalMonthlyCostProvider = Provider<double>((ref) {
   final toolsAsync = ref.watch(toolsProvider);
+  final calculator = ref.watch(costCalculatorServiceProvider);
   return toolsAsync.when(
-    data: (tools) => FinanceEngine.calculateTotalMonthlyCost(tools),
+    data: (tools) => calculator.calculateMonthlyTotal(tools),
     loading: () => 0.0,
     error: (_, __) => 0.0,
   );
@@ -111,20 +138,22 @@ final totalMonthlyCostProvider = Provider<double>((ref) {
 /// Total yearly cost provider
 final totalYearlyCostProvider = Provider<double>((ref) {
   final toolsAsync = ref.watch(toolsProvider);
+  final calculator = ref.watch(costCalculatorServiceProvider);
   return toolsAsync.when(
-    data: (tools) => FinanceEngine.calculateTotalYearlyCost(tools),
+    data: (tools) => calculator.calculateYearlyTotal(tools),
     loading: () => 0.0,
     error: (_, __) => 0.0,
   );
 });
 
 /// 3-year projection provider
-final threeYearProjectionProvider = Provider<Map<String, double>>((ref) {
+final threeYearProjectionProvider = Provider<Map<int, double>>((ref) {
   final toolsAsync = ref.watch(toolsProvider);
+  final calculator = ref.watch(costCalculatorServiceProvider);
   return toolsAsync.when(
-    data: (tools) => FinanceEngine.calculate3YearProjection(tools),
-    loading: () => {'year1': 0, 'year2': 0, 'year3': 0, 'total': 0},
-    error: (_, __) => {'year1': 0, 'year2': 0, 'year3': 0, 'total': 0},
+    data: (tools) => calculator.calculateThreeYearProjection(tools),
+    loading: () => {1: 0, 2: 0, 3: 0},
+    error: (_, __) => {1: 0, 2: 0, 3: 0},
   );
 });
 
@@ -141,24 +170,48 @@ final monthlyProjectionProvider = Provider<List<double>>((ref) {
 /// Waste detection provider
 final wasteDetectionProvider = Provider<Map<String, dynamic>>((ref) {
   final toolsAsync = ref.watch(toolsProvider);
+  final detector = ref.watch(hiddenCostDetectorServiceProvider);
+
   return toolsAsync.when(
-    data: (tools) => FinanceEngine.detectWaste(tools),
+    data: (tools) {
+      final unused = detector.detectUnusedLicenses(tools);
+      final duplicates = detector.detectDuplicateTools(tools);
+      final spikes = detector.detectGrowthSpikes(tools);
+
+      return {
+        'unused': unused,
+        'duplicates': duplicates,
+        'spikes': spikes,
+        'totalWarnings': unused.length + duplicates.length + spikes.length,
+      };
+    },
     loading: () => {
-      'warnings': [],
-      'zeroSeatsCount': 0,
-      'highGrowthCount': 0,
-      'duplicateCategories': [],
+      'unused': [],
+      'duplicates': {},
+      'spikes': [],
       'totalWarnings': 0,
     },
     error: (_, __) => {
-      'warnings': [],
-      'zeroSeatsCount': 0,
-      'highGrowthCount': 0,
-      'duplicateCategories': [],
+      'unused': [],
+      'duplicates': {},
+      'spikes': [],
       'totalWarnings': 0,
     },
   );
 });
+
+/// Consolidation suggestions provider
+final consolidationSuggestionsProvider =
+    Provider<List<ConsolidationSuggestion>>((ref) {
+      final toolsAsync = ref.watch(toolsProvider);
+      final service = ref.watch(consolidationServiceProvider);
+
+      return toolsAsync.when(
+        data: (tools) => service.getSuggestions(tools),
+        loading: () => [],
+        error: (_, __) => [],
+      );
+    });
 
 // ==================== RENT VS OWN CALCULATOR ====================
 

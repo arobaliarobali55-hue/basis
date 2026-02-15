@@ -5,14 +5,14 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
 
-class CalculatorScreen extends ConsumerStatefulWidget {
-  const CalculatorScreen({super.key});
+class RentVsOwnScreen extends ConsumerStatefulWidget {
+  const RentVsOwnScreen({super.key});
 
   @override
-  ConsumerState<CalculatorScreen> createState() => _CalculatorScreenState();
+  ConsumerState<RentVsOwnScreen> createState() => _RentVsOwnScreenState();
 }
 
-class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
+class _RentVsOwnScreenState extends ConsumerState<RentVsOwnScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
   double _breakEvenYears = 0;
   List<Map<String, dynamic>> _chartData = [];
@@ -20,7 +20,6 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
   void _calculate() {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final values = _formKey.currentState!.value;
-      // Handle potential String or num types from FormBuilder
       final saasCost = double.parse(values['saas_cost'].toString());
       final buildCost = double.parse(values['build_cost'].toString());
       final maintenanceCost = double.parse(
@@ -80,9 +79,7 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
                         ),
                         keyboardType: TextInputType.number,
                         validator: (val) =>
-                            val == null || val.toString().isEmpty
-                            ? 'Required'
-                            : null,
+                            val == null || val.isEmpty ? 'Required' : null,
                       ),
                       const SizedBox(height: AppTheme.spacing16),
                       FormBuilderTextField(
@@ -93,9 +90,7 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
                         ),
                         keyboardType: TextInputType.number,
                         validator: (val) =>
-                            val == null || val.toString().isEmpty
-                            ? 'Required'
-                            : null,
+                            val == null || val.isEmpty ? 'Required' : null,
                       ),
                       const SizedBox(height: AppTheme.spacing16),
                       FormBuilderTextField(
@@ -106,9 +101,7 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
                         ),
                         keyboardType: TextInputType.number,
                         validator: (val) =>
-                            val == null || val.toString().isEmpty
-                            ? 'Required'
-                            : null,
+                            val == null || val.isEmpty ? 'Required' : null,
                       ),
                       const SizedBox(height: AppTheme.spacing24),
                       SizedBox(

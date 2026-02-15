@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
 import '../../widgets/metric_card.dart';
+import '../../../core/services/consolidation_service.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -15,7 +16,6 @@ class DashboardScreen extends ConsumerWidget {
     final yearlyCost = ref.watch(totalYearlyCostProvider);
     final projection = ref.watch(threeYearProjectionProvider);
     final monthlyData = ref.watch(monthlyProjectionProvider);
-    final wasteData = ref.watch(wasteDetectionProvider);
 
     final isLoading = toolsAsync.isLoading;
 
@@ -131,52 +131,12 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: AppTheme.spacing32),
 
               // Waste Warnings
-              if (wasteData['totalWarnings'] > 0) ...[
-                Card(
-                  color: AppTheme.warningColor.withValues(alpha: 0.1),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacing16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.warning_amber_rounded,
-                              color: AppTheme.warningColor,
-                            ),
-                            const SizedBox(width: AppTheme.spacing8),
-                            Text(
-                              'Waste Detected',
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    color: AppTheme.warningColor,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: AppTheme.spacing12),
-                        ...((wasteData['warnings'] as List).take(3).map((
-                          warning,
-                        ) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: AppTheme.spacing8,
-                            ),
-                            child: Text(
-                              '• ${warning['message']}',
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: AppTheme.textSecondary),
-                            ),
-                          );
-                        })),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacing32),
-              ],
+              const _WasteDetectionSection(),
+              const SizedBox(height: AppTheme.spacing16),
+
+              // Consolidation Suggestions
+              const _ConsolidationSection(),
+              const SizedBox(height: AppTheme.spacing32),
 
               // Cost Projection Chart
               Text(
@@ -326,5 +286,162 @@ class _CostChart extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _WasteDetectionSection extends ConsumerWidget {
+  const _WasteDetectionSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final wasteData = ref.watch(wasteDetectionProvider);
+    final totalWarnings = wasteData['totalWarnings'] as int? ?? 0;
+
+    if (totalWarnings == 0) return const SizedBox.shrink();
+
+    final unused = wasteData['unused'] as List<dynamic>? ?? [];
+    final duplicates = wasteData['duplicates'] as Map? ?? {};
+    final spikes = wasteData['spikes'] as List<dynamic>? ?? [];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: AppTheme.warningColor,
+            ),
+            const SizedBox(width: AppTheme.spacing8),
+            Text(
+              'Hidden Costs Detected',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AppTheme.warningColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppTheme.spacing8),
+        ...unused.map(
+          (u) => _WarningCard(
+            title: 'Unused Licenses',
+            message: u.toString(),
+            icon: Icons.person_off,
+          ),
+        ),
+        ...duplicates.entries.map(
+          (e) => _WarningCard(
+            title: 'Duplicate Tools in ${e.key}',
+            message: 'Multiple tools found: ${(e.value as List).join(", ")}',
+            icon: Icons.copy,
+          ),
+        ),
+        ...spikes.map(
+          (s) => _WarningCard(
+            title: 'High Growth Rate',
+            message: s.toString(),
+            icon: Icons.trending_up,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _WarningCard extends StatelessWidget {
+  final String title;
+  final String message;
+  final IconData icon;
+
+  const _WarningCard({
+    required this.title,
+    required this.message,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: AppTheme.warningColor.withOpacity(0.1),
+      margin: const EdgeInsets.only(bottom: AppTheme.spacing8),
+      child: ListTile(
+        leading: Icon(icon, color: AppTheme.warningColor),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppTheme.warningColor,
+          ),
+        ),
+        subtitle: Text(message),
+      ),
+    );
+  }
+}
+
+class _ConsolidationSection extends ConsumerWidget {
+  const _ConsolidationSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final suggestions = ref.watch(consolidationSuggestionsProvider);
+
+    if (suggestions.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(Icons.lightbulb, color: AppTheme.accentColor),
+            const SizedBox(width: AppTheme.spacing8),
+            Text(
+              'Optimization Suggestions',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AppTheme.accentColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppTheme.spacing8),
+        ...suggestions.map(
+          (s) => Card(
+            margin: const EdgeInsets.only(bottom: AppTheme.spacing8),
+            child: ListTile(
+              leading: const Icon(
+                Icons.swap_horiz,
+                color: AppTheme.accentColor,
+              ),
+              title: Text(
+                s.title,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(s.description),
+              trailing: Chip(
+                label: Text(
+                  s.potentialSavings,
+                  style: const TextStyle(color: Colors.white, fontSize: 10),
+                ),
+                backgroundColor: _getSavingsColor(s.potentialSavings),
+                padding: EdgeInsets.zero,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color _getSavingsColor(String savings) {
+    switch (savings) {
+      case 'High':
+        return AppTheme.accentColor;
+      case 'Medium':
+        return AppTheme.warningColor;
+      default:
+        return AppTheme.secondaryColor;
+    }
   }
 }
