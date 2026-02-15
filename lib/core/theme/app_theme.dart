@@ -6,11 +6,11 @@ class AppTheme {
   // ---------------------------------------------------------------------------
   // Color Palette - Stitch Dark
   // ---------------------------------------------------------------------------
-  static const Color primaryColor = Color(0xFF2563EB); // Vivid Blue (Action)
+  static const Color primaryColor = Color(
+    0xFF1E3A8A,
+  ); // Deep Blue (CFO Professional)
   static const Color secondaryColor = Color(0xFF3B82F6); // Blue 500
-  static const Color accentColor = Color(
-    0xFF10B981,
-  ); // Emerald 500 (Success/Growth)
+  static const Color accentColor = Color(0xFF10B981); // Emerald 500 (Growth)
 
   static const Color errorColor = Color(0xFFEF4444); // Red 500
   static const Color warningColor = Color(0xFFF59E0B); // Amber 500
@@ -45,9 +45,9 @@ class AppTheme {
   // ---------------------------------------------------------------------------
   // Color Palette - Stitch Light
   // ---------------------------------------------------------------------------
-  static const Color lightPrimaryColor = Color(0xFF2563EB);
+  static const Color lightPrimaryColor = Color(0xFF1E3A8A); // Deep Blue
   static const Color lightSecondaryColor = Color(0xFF3B82F6);
-  static const Color lightAccentColor = Color(0xFF059669); // Emerald 600
+  static const Color lightAccentColor = Color(0xFF10B981); // Emerald 500
 
   static const Color lightErrorColor = Color(0xFFDC2626); // Red 600
   static const Color lightWarningColor = Color(0xFFD97706); // Amber 600

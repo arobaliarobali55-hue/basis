@@ -6,6 +6,8 @@ import 'package:basis/presentation/screens/dashboard/intelligence_dashboard.dart
 import 'package:basis/presentation/screens/inventory/inventory_screen.dart';
 import 'package:basis/presentation/screens/calculator/rent_vs_own_screen.dart';
 import 'package:basis/presentation/screens/tools/break_even_screen.dart';
+import 'package:basis/presentation/widgets/layout/sidebar.dart';
+import 'package:basis/presentation/widgets/layout/top_bar.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -17,11 +19,13 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = const [
-    IntelligenceDashboard(),
-    InventoryScreen(),
-    RentVsOwnScreen(),
-    BreakEvenScreen(),
+  final List<Widget> _screens = [
+    const IntelligenceDashboard(),
+    const InventoryScreen(),
+    const RentVsOwnScreen(),
+    const BreakEvenScreen(),
+    const Center(child: Text('AI Insights')), // Placeholder
+    const Center(child: Text('Reports')), // Placeholder
   ];
 
   void _onDestinationSelected(int index) {
@@ -36,82 +40,30 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth > 800) {
-          // Desktop: Navigation Rail (Sidebar)
+          // Desktop: Professional Sidebar + Content
           return Scaffold(
             body: Row(
               children: [
-                NavigationRail(
+                Sidebar(
                   selectedIndex: _selectedIndex,
-                  onDestinationSelected: _onDestinationSelected,
-                  labelType: NavigationRailLabelType.all,
-                  backgroundColor: Theme.of(context).cardColor,
-                  leading: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24.0),
-                    child: Image.asset(
-                      'assets/icon.png',
-                      height: 40,
-                      errorBuilder: (_, __, ___) => const Icon(
-                        Icons.account_balance_wallet,
-                        size: 40,
-                        color: AppTheme.primaryColor,
-                      ),
-                    ),
-                  ),
-                  trailing: Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.settings_outlined),
-                          onPressed: () =>
-                              Navigator.pushNamed(context, '/settings'),
-                          tooltip: 'Settings',
-                        ),
-                        const SizedBox(height: 16),
-                        IconButton(
-                          icon: const Icon(Icons.logout),
-                          onPressed: () {
-                            ref.read(supabaseRepositoryProvider).signOut();
-                          },
-                          tooltip: 'Logout',
-                        ),
-                        const SizedBox(height: 24),
-                      ],
-                    ),
-                  ),
-                  destinations: const [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.dashboard_outlined),
-                      selectedIcon: Icon(Icons.dashboard),
-                      label: Text('Overview'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.inventory_2_outlined),
-                      selectedIcon: Icon(Icons.inventory_2),
-                      label: Text('Stack'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.compare_arrows),
-                      selectedIcon: Icon(Icons.compare_arrows),
-                      label: Text('Strategy'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.analytics_outlined),
-                      selectedIcon: Icon(Icons.analytics),
-                      label: Text('Modeling'),
-                    ),
-                  ],
+                  onItemSelected: _onDestinationSelected,
                 ),
-                const VerticalDivider(thickness: 1, width: 1),
                 Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    switchInCurve: Curves.easeOut,
-                    switchOutCurve: Curves.easeIn,
-                    child: KeyedSubtree(
-                      key: ValueKey<int>(_selectedIndex),
-                      child: _screens[_selectedIndex],
-                    ),
+                  child: Column(
+                    children: [
+                      const TopBar(),
+                      Expanded(
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          switchInCurve: Curves.easeOut,
+                          switchOutCurve: Curves.easeIn,
+                          child: KeyedSubtree(
+                            key: ValueKey<int>(_selectedIndex),
+                            child: _screens[_selectedIndex],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

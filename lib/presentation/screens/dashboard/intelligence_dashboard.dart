@@ -23,8 +23,7 @@ class IntelligenceDashboard extends ConsumerWidget {
       backgroundColor: AppTheme.backgroundColor,
       body: CustomScrollView(
         slivers: [
-          // Premium Header
-          const SliverToBoxAdapter(child: _DashboardHeader()),
+          const SliverToBoxAdapter(child: SizedBox(height: AppTheme.spacing24)),
 
           // KPI Grid Section
           SliverPadding(
@@ -84,129 +83,6 @@ class IntelligenceDashboard extends ConsumerWidget {
           const SliverToBoxAdapter(child: SizedBox(height: AppTheme.spacing48)),
         ],
       ),
-    );
-  }
-}
-
-class _DashboardHeader extends StatelessWidget {
-  const _DashboardHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(AppTheme.spacing24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                'Financial Overview',
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -1.0,
-                ),
-              ),
-              const SizedBox(width: AppTheme.spacing12),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                  border: Border.all(
-                    color: AppTheme.primaryColor.withOpacity(0.2),
-                  ),
-                ),
-                child: Text(
-                  'Acme Corp HQ',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryColor.withOpacity(0.8),
-                  ),
-                ),
-              ),
-              const Spacer(),
-              _PeriodPicker(),
-              const SizedBox(width: AppTheme.spacing16),
-              _NotificationBadge(),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Real-time SaaS spend and efficiency metrics',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondary),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PeriodPicker extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceColor,
-        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        border: Border.all(color: AppTheme.borderColor),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _PeriodButton(label: 'Last 30 days', isSelected: false),
-          _PeriodButton(label: '1 Year', isSelected: true),
-          _PeriodButton(label: '3Y Projection', isSelected: false),
-        ],
-      ),
-    );
-  }
-}
-
-class _PeriodButton extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-
-  const _PeriodButton({required this.label, required this.isSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? AppTheme.primaryColor : Colors.transparent,
-        borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-          color: isSelected ? Colors.white : AppTheme.textSecondary,
-        ),
-      ),
-    );
-  }
-}
-
-class _NotificationBadge extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceColor,
-        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        border: Border.all(color: AppTheme.borderColor),
-      ),
-      child: const Icon(Icons.notifications_outlined, size: 20),
     );
   }
 }
