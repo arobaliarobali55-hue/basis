@@ -79,6 +79,7 @@ class _CostProjectionCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final projection = ref.watch(threeYearProjectionProvider);
+    final maxY = (projection[3] ?? 1000) * 1.2;
 
     return Card(
       child: Padding(
@@ -97,11 +98,11 @@ class _CostProjectionCard extends ConsumerWidget {
             ),
             const SizedBox(height: AppTheme.spacing24),
             AspectRatio(
-              aspectRatio: 1.7,
+              aspectRatio: 2.2,
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
-                  maxY: (projection[3] ?? 1000) * 1.2,
+                  maxY: maxY,
                   barTouchData: BarTouchData(
                     touchTooltipData: BarTouchTooltipData(
                       getTooltipColor: (_) => AppTheme.surfaceColor,
@@ -169,9 +170,23 @@ class _CostProjectionCard extends ConsumerWidget {
                       barRods: [
                         BarChartRodData(
                           toY: projection[1] ?? 0,
-                          color: AppTheme.primaryColor,
-                          width: 22,
-                          borderRadius: BorderRadius.circular(4),
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.primaryColor,
+                              AppTheme.primaryColor.withOpacity(0.6),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          width: 26,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(6),
+                          ),
+                          backDrawRodData: BackgroundBarChartRodData(
+                            show: true,
+                            toY: maxY,
+                            color: AppTheme.surfaceHighlight.withOpacity(0.3),
+                          ),
                         ),
                       ],
                     ),
@@ -180,9 +195,23 @@ class _CostProjectionCard extends ConsumerWidget {
                       barRods: [
                         BarChartRodData(
                           toY: projection[2] ?? 0,
-                          color: AppTheme.secondaryColor,
-                          width: 22,
-                          borderRadius: BorderRadius.circular(4),
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.secondaryColor,
+                              AppTheme.secondaryColor.withOpacity(0.6),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          width: 26,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(6),
+                          ),
+                          backDrawRodData: BackgroundBarChartRodData(
+                            show: true,
+                            toY: maxY,
+                            color: AppTheme.surfaceHighlight.withOpacity(0.3),
+                          ),
                         ),
                       ],
                     ),
@@ -191,9 +220,23 @@ class _CostProjectionCard extends ConsumerWidget {
                       barRods: [
                         BarChartRodData(
                           toY: projection[3] ?? 0,
-                          color: AppTheme.warningColor, // Highlight growth
-                          width: 22,
-                          borderRadius: BorderRadius.circular(4),
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.warningColor,
+                              AppTheme.warningColor.withOpacity(0.6),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          width: 26,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(6),
+                          ),
+                          backDrawRodData: BackgroundBarChartRodData(
+                            show: true,
+                            toY: maxY,
+                            color: AppTheme.surfaceHighlight.withOpacity(0.3),
+                          ),
                         ),
                       ],
                     ),
