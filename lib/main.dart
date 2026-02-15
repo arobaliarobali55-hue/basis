@@ -9,6 +9,7 @@ import 'presentation/screens/dashboard/dashboard_screen.dart';
 import 'presentation/screens/tools/add_tool_screen.dart';
 import 'presentation/screens/calculator/calculator_screen.dart';
 import 'presentation/screens/settings/settings_screen.dart';
+import 'presentation/screens/settings/data_import_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,6 +42,7 @@ class BasisApp extends ConsumerWidget {
         '/add-tool': (context) => const AddToolScreen(),
         '/calculator': (context) => const CalculatorScreen(),
         '/settings': (context) => const SettingsScreen(),
+        '/import': (context) => const DataImportScreen(),
       },
     );
   }

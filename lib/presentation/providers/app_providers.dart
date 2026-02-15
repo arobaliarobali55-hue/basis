@@ -10,6 +10,8 @@ import '../../core/services/cost_calculator_service.dart';
 import '../../core/services/hidden_cost_detector_service.dart';
 import '../../core/services/consolidation_service.dart';
 import '../../core/services/break_even_service.dart';
+import '../../core/services/csv_import_service.dart';
+import '../../core/services/ai_analysis_service.dart';
 
 // ==================== REPOSITORY PROVIDERS ====================
 
@@ -122,6 +124,15 @@ final breakEvenServiceProvider = Provider<BreakEvenService>((ref) {
   return BreakEvenService();
 });
 
+final csvImportServiceProvider = Provider<CsvImportService>((ref) {
+  return CsvImportService();
+});
+
+final aiAnalysisServiceProvider = Provider<AiAnalysisService>((ref) {
+  // TODO: Get API Key from settings or env
+  return AiAnalysisService('YOUR_API_KEY_HERE');
+});
+
 // ==================== FINANCE PROVIDERS ====================
 
 /// Total monthly cost provider
@@ -177,12 +188,18 @@ final wasteDetectionProvider = Provider<Map<String, dynamic>>((ref) {
       final unused = detector.detectUnusedLicenses(tools);
       final duplicates = detector.detectDuplicateTools(tools);
       final spikes = detector.detectGrowthSpikes(tools);
+      final anomalies = detector.detectPriceAnomalies(tools);
 
       return {
         'unused': unused,
         'duplicates': duplicates,
         'spikes': spikes,
-        'totalWarnings': unused.length + duplicates.length + spikes.length,
+        'anomalies': anomalies,
+        'totalWarnings':
+            unused.length +
+            duplicates.length +
+            spikes.length +
+            anomalies.length,
       };
     },
     loading: () => {

@@ -194,19 +194,89 @@ class _RentVsOwnScreenState extends ConsumerState<RentVsOwnScreen> {
                   const SizedBox(width: 4),
                   const Text('SaaS (Rent)'),
                   const SizedBox(width: 16),
-                  const Icon(
-                    Icons.circle,
-                    color: AppTheme.accentColor,
-                    size: 12,
-                  ),
-                  const SizedBox(width: 4),
                   const Text('Custom (Own)'),
                 ],
+              ),
+              const SizedBox(height: AppTheme.spacing24),
+              const Divider(),
+              const SizedBox(height: AppTheme.spacing16),
+
+              // AI Risk Analysis Section
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    // Get values
+                    _formKey.currentState?.save();
+                    final values = _formKey.currentState?.value ?? {};
+                    final buildCost = values['build_cost'] ?? '0';
+
+                    // Show dialog with AI prediction
+                    showDialog(
+                      context: context,
+                      builder: (context) =>
+                          _RiskAnalysisDialog(buildCost: buildCost.toString()),
+                    );
+                  },
+                  icon: const Icon(Icons.psychology),
+                  label: const Text('Analyze "Build" Risk with AI'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.accentColor,
+                    side: const BorderSide(color: AppTheme.accentColor),
+                  ),
+                ),
               ),
             ],
           ],
         ),
       ),
+    );
+  }
+}
+
+class _RiskAnalysisDialog extends ConsumerStatefulWidget {
+  final String buildCost;
+  const _RiskAnalysisDialog({required this.buildCost});
+
+  @override
+  ConsumerState<_RiskAnalysisDialog> createState() =>
+      _RiskAnalysisDialogState();
+}
+
+class _RiskAnalysisDialogState extends ConsumerState<_RiskAnalysisDialog> {
+  String _result = "Analyzing...";
+
+  @override
+  void initState() {
+    super.initState();
+    _analyze();
+  }
+
+  Future<void> _analyze() async {
+    final aiService = ref.read(aiAnalysisServiceProvider);
+    // Mock data for type/location as we don't have inputs for them yet in this screen
+    final result = await aiService.predictBusinessRisk(
+      type: "Custom Software Build",
+      location: "Internal Tool",
+      budget: double.tryParse(widget.buildCost) ?? 0,
+    );
+
+    if (mounted) {
+      setState(() => _result = result);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('AI Risk Analysis'),
+      content: SingleChildScrollView(child: Text(_result)),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Close'),
+        ),
+      ],
     );
   }
 }

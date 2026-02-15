@@ -5,6 +5,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../providers/app_providers.dart';
 import '../../widgets/metric_card.dart';
 import '../../../core/services/consolidation_service.dart';
+import 'ai_report_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -180,6 +181,34 @@ class DashboardScreen extends ConsumerWidget {
                   label: const Text('Rent vs Own Calculator'),
                 ),
               ),
+              const SizedBox(height: AppTheme.spacing16),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    // Temporary quick action for now
+                    Navigator.pushNamed(context, '/import');
+                  },
+                  icon: const Icon(Icons.upload_file),
+                  label: const Text('Import from CSV'),
+                ),
+              ),
+              const SizedBox(height: AppTheme.spacing16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    // Trigger AI Analysis
+                    // Implementation to follow or show modal
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.accentColor,
+                    foregroundColor: Colors.white,
+                  ),
+                  icon: const Icon(Icons.auto_awesome),
+                  label: const Text('Generate AI Report'),
+                ),
+              ),
             ],
           ),
         ),
@@ -302,6 +331,7 @@ class _WasteDetectionSection extends ConsumerWidget {
     final unused = wasteData['unused'] as List<dynamic>? ?? [];
     final duplicates = wasteData['duplicates'] as Map? ?? {};
     final spikes = wasteData['spikes'] as List<dynamic>? ?? [];
+    final anomalies = wasteData['anomalies'] as Map<String, String>? ?? {};
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,6 +372,13 @@ class _WasteDetectionSection extends ConsumerWidget {
             title: 'High Growth Rate',
             message: s.toString(),
             icon: Icons.trending_up,
+          ),
+        ),
+        ...anomalies.entries.map(
+          (e) => _WarningCard(
+            title: 'Price Anomaly: ${e.key}',
+            message: e.value,
+            icon: Icons.attach_money,
           ),
         ),
       ],

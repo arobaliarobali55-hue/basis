@@ -55,12 +55,49 @@ class HiddenCostDetectorService {
     List<ToolEntity> tools, {
     double threshold = 20.0,
   }) {
-    return tools
-        .where((tool) => tool.growthRate > threshold)
-        .map(
-          (tool) =>
-              '${tool.toolName} is growing at ${tool.growthRate}%/year. Monitor closely.',
-        )
-        .toList();
+    final spikes = <String>[];
+    for (final tool in tools) {
+      if (tool.growthRate > threshold) {
+        spikes.add(
+          '${tool.toolName} is growing at ${tool.growthRate}%/year (High)',
+        );
+      }
+    }
+    return spikes;
+  }
+
+  /// Detect tools with pricing above market average
+  Map<String, String> detectPriceAnomalies(List<ToolEntity> tools) {
+    final anomalies = <String, String>{};
+    // Hardcoded market benchmarks (avg price per seat/user)
+    final marketRates = {
+      'slack': 8.0,
+      'zoom': 15.0,
+      'jira': 7.5,
+      'notion': 10.0,
+      'figma': 12.0,
+      'github': 4.0,
+      'salesforce': 25.0,
+      'hubspot': 50.0,
+    };
+
+    for (final tool in tools) {
+      final name = tool.toolName.toLowerCase();
+      // Simple exact match or contains check
+      for (final entry in marketRates.entries) {
+        if (name.contains(entry.key)) {
+          // Calculate effective price per seat if possible
+          if (tool.seats > 0) {
+            final pricePerSeat = tool.monthlyPrice / tool.seats;
+            // If price is 50% higher than benchmark
+            if (pricePerSeat > entry.value * 1.5) {
+              anomalies[tool.toolName] =
+                  'Paying \$${pricePerSeat.toStringAsFixed(2)}/seat vs market avg \$${entry.value}/seat';
+            }
+          }
+        }
+      }
+    }
+    return anomalies;
   }
 }
