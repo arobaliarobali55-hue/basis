@@ -25,6 +25,18 @@ class IntelligenceDashboard extends ConsumerWidget {
         slivers: [
           const SliverToBoxAdapter(child: SizedBox(height: AppTheme.spacing24)),
 
+          // Top Toggle and Range Selector
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spacing24,
+              ),
+              child: _buildHeaderControls(context),
+            ),
+          ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: AppTheme.spacing24)),
+
           // KPI Grid Section
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacing24),
@@ -48,7 +60,7 @@ class IntelligenceDashboard extends ConsumerWidget {
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // SaaS Spend Over Time (Large Line Chart)
+                        // SaaS Spend Over Time (Large Chart)
                         Expanded(
                           flex: 7,
                           child: EntryAnimation(
@@ -57,7 +69,7 @@ class IntelligenceDashboard extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(width: AppTheme.spacing24),
-                        // Spend by Category (Donut Chart)
+                        // Spend by Category
                         Expanded(
                           flex: 3,
                           child: EntryAnimation(
@@ -105,6 +117,77 @@ class IntelligenceDashboard extends ConsumerWidget {
       ),
     );
   }
+
+  Widget _buildHeaderControls(BuildContext context) {
+    return Row(
+      children: [
+        // View Toggle
+        Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceColor,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppTheme.borderColor),
+          ),
+          child: Row(
+            children: const [
+              _ToggleItem(label: '3Y Projection', isSelected: true),
+              _ToggleItem(label: '5Y View', isSelected: false),
+            ],
+          ),
+        ),
+        const Spacer(),
+        // Date Range
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceColor,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppTheme.borderColor),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.calendar_today, size: 16, color: Colors.white),
+              const SizedBox(width: 8),
+              Text(
+                'FY 2024 - 2027',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ToggleItem extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+
+  const _ToggleItem({required this.label, required this.isSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      decoration: BoxDecoration(
+        color: isSelected ? const Color(0xFF1E3A8A) : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: isSelected ? Colors.white : AppTheme.textTertiary,
+        ),
+      ),
+    );
+  }
 }
 
 class _KpiSummaryGrid extends StatelessWidget {
@@ -114,16 +197,11 @@ class _KpiSummaryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mocking some data for the KPIs based on the reference
     final monthlySpend = projection[1] != null ? projection[1]! / 12 : 142500.0;
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final crossAxisCount = constraints.maxWidth > 1200
-            ? 5
-            : constraints.maxWidth > 800
-            ? 3
-            : 2;
+        final crossAxisCount = constraints.maxWidth > 800 ? 2 : 1;
 
         return GridView.count(
           shrinkWrap: true,
@@ -131,47 +209,22 @@ class _KpiSummaryGrid extends StatelessWidget {
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: AppTheme.spacing16,
           crossAxisSpacing: AppTheme.spacing16,
-          childAspectRatio: constraints.maxWidth > 600 ? 1.5 : 1.2,
+          childAspectRatio: 2.2,
           children: [
             _KpiSummaryCard(
-              label: 'TOTAL MONTHLY SPEND',
-              value: '\$${(monthlySpend).toStringAsFixed(0)}',
+              label: 'MONTHLY SPEND',
+              value: '\$${(monthlySpend / 1000).toStringAsFixed(0)}k',
               trend: '+2.4%',
-              trendColor: AppTheme.accentColor,
-              icon: Icons.account_balance_wallet,
-              iconColor: Colors.blue,
+              progress: 0.7,
+              progressColor: Colors.blue,
             ),
             _KpiSummaryCard(
-              label: 'ANNUAL SPEND',
-              value: '\$${(projection[1] ?? 1710000).toStringAsFixed(0)}',
+              label: 'ANNUAL ARR',
+              value:
+                  '\$${((projection[1] ?? 1710000) / 1000000).toStringAsFixed(1)}M',
               trend: '-1.2%',
-              trendColor: AppTheme.errorColor,
-              icon: Icons.pie_chart,
-              iconColor: Colors.indigo,
-            ),
-            _KpiSummaryCard(
-              label: '3-YEAR PROJECTED',
-              value: '\$${(projection[3] ?? 6120000).toStringAsFixed(0)}',
-              trend: 'Est.',
-              trendColor: AppTheme.textSecondary,
-              icon: Icons.calendar_today,
-              iconColor: Colors.purple,
-            ),
-            _KpiSummaryCard(
-              label: 'POTENTIAL SAVINGS',
-              value: '\$18,420',
-              trend: '/mo',
-              trendColor: AppTheme.textSecondary,
-              icon: Icons.lightbulb_outline,
-              iconColor: AppTheme.accentColor,
-            ),
-            _KpiSummaryCard(
-              label: 'COST PER EMPLOYEE',
-              value: '\$485',
-              trend: 'Avg',
-              trendColor: AppTheme.textSecondary,
-              icon: Icons.people_outline,
-              iconColor: Colors.orange,
+              progress: 0.4,
+              progressColor: AppTheme.accentColor,
             ),
           ],
         );
@@ -184,92 +237,86 @@ class _KpiSummaryCard extends StatelessWidget {
   final String label;
   final String value;
   final String trend;
-  final Color trendColor;
-  final IconData icon;
-  final Color iconColor;
+  final double progress;
+  final Color progressColor;
 
   const _KpiSummaryCard({
     required this.label,
     required this.value,
     required this.trend,
-    required this.trendColor,
-    required this.icon,
-    required this.iconColor,
+    required this.progress,
+    required this.progressColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(AppTheme.spacing20),
+      padding: const EdgeInsets.all(AppTheme.spacing24),
       decoration: BoxDecoration(
         color: AppTheme.surfaceColor,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+        borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
         border: Border.all(color: AppTheme.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                ),
-                child: Icon(icon, size: 20, color: iconColor),
-              ),
-              if (trend != 'Est.' && trend != 'Avg' && trend != '/mo')
-                Row(
-                  children: [
-                    Icon(
-                      trend.startsWith('+')
-                          ? Icons.trending_up
-                          : Icons.trending_down,
-                      size: 14,
-                      color: trendColor,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      trend,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: trendColor,
-                      ),
-                    ),
-                  ],
-                )
-              else
-                Text(
-                  trend,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: trendColor,
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: AppTheme.spacing16),
           Text(
             label,
             style: const TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
               color: AppTheme.textSecondary,
               letterSpacing: 0.5,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
-            ),
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                trend,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: trend.startsWith('+')
+                      ? AppTheme.errorColor
+                      : AppTheme.accentColor,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Stack(
+            children: [
+              Container(
+                height: 6,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: AppTheme.backgroundColor,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+              FractionallySizedBox(
+                widthFactor: progress,
+                child: Container(
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: progressColor,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -284,113 +331,75 @@ class _SpendOverTimeChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Generate curved line spots with smooth transitions
-    final List<FlSpot> spots = [
-      const FlSpot(0, 120000),
-      const FlSpot(1, 145000),
-      const FlSpot(2, 138000),
-      const FlSpot(3, 160000),
-      const FlSpot(4, 155000),
-      const FlSpot(5, 172000),
-      const FlSpot(6, 168000),
-    ];
-
     return Container(
       padding: const EdgeInsets.all(AppTheme.spacing24),
       decoration: BoxDecoration(
         color: AppTheme.surfaceColor,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+        borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
         border: Border.all(color: AppTheme.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'SaaS Spend Over Time',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              Row(
                 children: [
-                  Text(
-                    'SaaS Spend Over Time',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: constraints.maxWidth < 600 ? 16 : 20,
-                    ),
+                  _ChartLegendItem(
+                    label: 'Actual',
+                    color: const Color(0xFF2563EB),
                   ),
-                  if (constraints.maxWidth > 500)
-                    Row(
-                      children: [
-                        _ChartLegendItem(
-                          label: 'Actual',
-                          color: AppTheme.primaryColor,
-                        ),
-                        const SizedBox(width: 16),
-                        _ChartLegendItem(
-                          label: 'Projected',
-                          color: AppTheme.primaryColor.withOpacity(0.4),
-                        ),
-                      ],
-                    ),
+                  const SizedBox(width: 16),
+                  _ChartLegendItem(
+                    label: 'Projected',
+                    color: const Color(0xFF2563EB).withOpacity(0.3),
+                  ),
                 ],
-              );
-            },
+              ),
+            ],
           ),
           const SizedBox(height: AppTheme.spacing32),
           SizedBox(
-            height: 300,
-            child: LineChart(
-              LineChartData(
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  getDrawingHorizontalLine: (value) {
-                    return FlLine(color: AppTheme.borderColor, strokeWidth: 1);
-                  },
-                ),
+            height: 250,
+            child: BarChart(
+              BarChartData(
+                alignment: BarChartAlignment.spaceBetween,
+                maxY: 200000,
+                barTouchData: BarTouchData(enabled: false),
                 titlesData: FlTitlesData(
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 45,
-                      getTitlesWidget: (value, meta) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Text(
-                            '\$${(value / 1000).toStringAsFixed(0)}k',
-                            style: const TextStyle(
-                              color: AppTheme.textTertiary,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  show: true,
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 30,
                       getTitlesWidget: (value, meta) {
-                        const months = [
-                          'Jan',
-                          'Feb',
-                          'Mar',
-                          'Apr',
-                          'May',
-                          'Jun',
-                          'Jul',
+                        const quarters = [
+                          'Q1 23',
+                          'Q3 23',
+                          'Q1 24',
+                          'Q3 24',
+                          'Q1 25',
+                          'Q3 25',
                         ];
                         if (value.toInt() >= 0 &&
-                            value.toInt() < months.length) {
+                            value.toInt() < quarters.length) {
                           return Padding(
                             padding: const EdgeInsets.only(top: 10.0),
                             child: Text(
-                              months[value.toInt()],
+                              quarters[value.toInt()],
                               style: const TextStyle(
                                 color: AppTheme.textTertiary,
                                 fontSize: 10,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           );
@@ -399,6 +408,9 @@ class _SpendOverTimeChart extends StatelessWidget {
                       },
                     ),
                   ),
+                  leftTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                   rightTitles: const AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
@@ -406,44 +418,43 @@ class _SpendOverTimeChart extends StatelessWidget {
                     sideTitles: SideTitles(showTitles: false),
                   ),
                 ),
+                gridData: const FlGridData(show: false),
                 borderData: FlBorderData(show: false),
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: spots,
-                    isCurved: true,
-                    curveSmoothness: 0.35,
-                    color: AppTheme.primaryColor,
-                    barWidth: 4,
-                    isStrokeCapRound: true,
-                    dotData: FlDotData(
-                      show: true,
-                      getDotPainter: (spot, percent, barData, index) {
-                        return FlDotCirclePainter(
-                          radius: 4,
-                          color: AppTheme.primaryColor,
-                          strokeWidth: 2,
-                          strokeColor: AppTheme.surfaceColor,
-                        );
-                      },
-                    ),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      gradient: LinearGradient(
-                        colors: [
-                          AppTheme.primaryColor.withOpacity(0.2),
-                          AppTheme.primaryColor.withOpacity(0.0),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                  ),
+                barGroups: [
+                  _makeGroupData(0, 100000, isProjected: false),
+                  _makeGroupData(1, 130000, isProjected: false),
+                  _makeGroupData(2, 110000, isProjected: false),
+                  _makeGroupData(3, 160000, isProjected: false, isNow: true),
+                  _makeGroupData(4, 150000, isProjected: true),
+                  _makeGroupData(5, 180000, isProjected: true),
                 ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  BarChartGroupData _makeGroupData(
+    int x,
+    double y, {
+    bool isProjected = false,
+    bool isNow = false,
+  }) {
+    return BarChartGroupData(
+      x: x,
+      barRods: [
+        BarChartRodData(
+          toY: y,
+          color: isProjected
+              ? const Color(0xFF1E3A8A).withOpacity(0.4)
+              : const Color(0xFF1E3A8A),
+          width: 25,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+        ),
+      ],
+      showingTooltipIndicators: isNow ? [0] : [],
     );
   }
 }
@@ -544,20 +555,22 @@ class _SpendCategoryDonut extends StatelessWidget {
         ),
         Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: const [
             Text(
-              '84%',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              '32',
+              style: TextStyle(
+                fontSize: 32,
                 fontWeight: FontWeight.w900,
                 color: Colors.white,
               ),
             ),
-            const Text(
-              'Optimized',
+            Text(
+              'TOOLS',
               style: TextStyle(
                 color: AppTheme.textTertiary,
                 fontSize: 10,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.2,
               ),
             ),
           ],
@@ -624,123 +637,62 @@ class _AiFinancialInsightsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        LayoutBuilder(
-          builder: (context, constraints) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'AI Financial Insights',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: constraints.maxWidth < 600 ? 18 : null,
-                        ),
-                      ),
-                      Text(
-                        'Personalized recommendations',
-                        style: TextStyle(
-                          color: AppTheme.textTertiary,
-                          fontSize: constraints.maxWidth < 600 ? 11 : 13,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.auto_awesome, size: 16),
-                  label: Text(
-                    constraints.maxWidth < 600
-                        ? 'View All'
-                        : 'View All Analysis',
-                  ),
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppTheme.primaryColor,
+                const Icon(Icons.lightbulb, color: Color(0xFF3B82F6), size: 24),
+                const SizedBox(width: 12),
+                const Text(
+                  'AI Financial Insights',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ],
-            );
-          },
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEF4444).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: const Color(0xFFEF4444).withOpacity(0.3),
+                ),
+              ),
+              child: const Text(
+                '3 ACTIONS',
+                style: TextStyle(
+                  color: Color(0xFFEF4444),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: AppTheme.spacing24),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth > 800) {
-              return Row(
-                children: const [
-                  Expanded(
-                    child: _AiInsightActionCard(
-                      title: 'Consolidate CRM Tools',
-                      description:
-                          'Salesforce and HubSpot licenses overlap in your Marketing department.',
-                      saving: '\$1,240/mo',
-                      icon: Icons.merge_type,
-                      iconColor: Colors.orange,
-                    ),
-                  ),
-                  SizedBox(width: AppTheme.spacing24),
-                  Expanded(
-                    child: _AiInsightActionCard(
-                      title: 'Unused Seat Cleanup',
-                      description:
-                          'Found 24 unused seats in your Figma Enterprise account.',
-                      saving: '\$360/mo',
-                      icon: Icons.person_off_outlined,
-                      iconColor: Colors.blue,
-                    ),
-                  ),
-                  SizedBox(width: AppTheme.spacing24),
-                  Expanded(
-                    child: _AiInsightActionCard(
-                      title: 'Annual Plan Savings',
-                      description:
-                          'Switching Datadog to an annual contract could save up to 15%.',
-                      saving: '\$8,400/yr',
-                      icon: Icons.calendar_month_outlined,
-                      iconColor: Colors.green,
-                    ),
-                  ),
-                ],
-              );
-            } else {
-              return Column(
-                children: const [
-                  _AiInsightActionCard(
-                    title: 'Consolidate CRM Tools',
-                    description:
-                        'Salesforce and HubSpot licenses overlap in your Marketing department.',
-                    saving: '\$1,240/mo',
-                    icon: Icons.merge_type,
-                    iconColor: Colors.orange,
-                  ),
-                  SizedBox(height: AppTheme.spacing16),
-                  _AiInsightActionCard(
-                    title: 'Unused Seat Cleanup',
-                    description:
-                        'Found 24 unused seats in your Figma Enterprise account.',
-                    saving: '\$360/mo',
-                    icon: Icons.person_off_outlined,
-                    iconColor: Colors.blue,
-                  ),
-                  SizedBox(height: AppTheme.spacing16),
-                  _AiInsightActionCard(
-                    title: 'Annual Plan Savings',
-                    description:
-                        'Switching Datadog to an annual contract could save up to 15%.',
-                    saving: '\$8,400/yr',
-                    icon: Icons.calendar_month_outlined,
-                    iconColor: Colors.green,
-                  ),
-                ],
-              );
-            }
-          },
+        const _AiInsightActionCard(
+          title: 'Tool Redundancy Detected',
+          description:
+              'Overlap between Zoom and MS Teams in Marketing department.',
+          saving: '-\$2.4k/mo',
+          actionLabel: 'CONSOLIDATION PLAN',
+          icon: Icons.warning_rounded,
+          iconColor: Colors.amber,
+        ),
+        const SizedBox(height: AppTheme.spacing16),
+        const _AiInsightActionCard(
+          title: 'Unused Seat Leakage',
+          description:
+              '18 Salesforce seats have been inactive for > 60 days. Downgrade recommended.',
+          saving: '-\$4.8k/mo',
+          actionLabel: 'AUTO-DOWNGRADE',
+          icon: Icons.flash_on_rounded,
+          iconColor: Colors.red,
         ),
       ],
     );
@@ -751,6 +703,7 @@ class _AiInsightActionCard extends StatelessWidget {
   final String title;
   final String description;
   final String saving;
+  final String actionLabel;
   final IconData icon;
   final Color iconColor;
 
@@ -758,6 +711,7 @@ class _AiInsightActionCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.saving,
+    required this.actionLabel,
     required this.icon,
     required this.iconColor,
   });
@@ -768,84 +722,81 @@ class _AiInsightActionCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppTheme.spacing24),
       decoration: BoxDecoration(
         color: AppTheme.surfaceColor,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+        borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
         border: Border.all(color: AppTheme.borderColor),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              color: Colors.white.withOpacity(0.05),
+              shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: iconColor, size: 24),
+            child: Icon(icon, color: iconColor, size: 32),
           ),
-          const SizedBox(height: AppTheme.spacing20),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            description,
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppTheme.textSecondary,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacing24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'EST. SAVINGS',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                      color: AppTheme.textTertiary,
-                      letterSpacing: 0.5,
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                  Text(
-                    saving,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w900,
-                      color: iconColor,
+                    Text(
+                      saving,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.amber,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.surfaceHighlight,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppTheme.textSecondary,
+                    height: 1.4,
                   ),
                 ),
-                child: const Text(
-                  'Take Action',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                const SizedBox(height: 16),
+                InkWell(
+                  onTap: () {},
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        actionLabel,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF3B82F6),
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 14,
+                        color: Color(0xFF3B82F6),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

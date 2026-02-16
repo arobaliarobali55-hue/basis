@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:basis/core/theme/app_theme.dart';
-import 'package:basis/presentation/widgets/common/custom_card.dart';
 
 class BreakEvenScreen extends ConsumerStatefulWidget {
   const BreakEvenScreen({super.key});
