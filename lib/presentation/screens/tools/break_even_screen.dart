@@ -36,33 +36,66 @@ class _BreakEvenScreenState extends ConsumerState<BreakEvenScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: AppTheme.spacing24),
-            Row(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Modeling & Break-even',
-                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -1.0,
+            LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth > 600) {
+                  return Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Modeling & Break-even',
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -1.0,
+                                ),
+                          ),
+                          Text(
+                            'Enterprise ROI modeling and decision matrix',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: AppTheme.textSecondary),
+                          ),
+                        ],
                       ),
-                    ),
-                    Text(
-                      'Enterprise ROI modeling and decision matrix',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.textSecondary,
+                      const Spacer(),
+                      ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.download_outlined, size: 18),
+                        label: const Text('Export ROI Model'),
                       ),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.download_outlined, size: 18),
-                  label: const Text('Export ROI Model'),
-                ),
-              ],
+                    ],
+                  );
+                } else {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Modeling & Break-even',
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -1.0,
+                            ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Enterprise ROI modeling and decision matrix',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.download_outlined, size: 18),
+                        label: const Text('Export ROI Model'),
+                      ),
+                    ],
+                  );
+                }
+              },
             ),
             const SizedBox(height: AppTheme.spacing32),
 
@@ -78,10 +111,7 @@ class _BreakEvenScreenState extends ConsumerState<BreakEvenScreen> {
                         child: _buildVisuals(breakEvenYears, monthlyDiff),
                       ),
                       const SizedBox(width: AppTheme.spacing24),
-                      Expanded(
-                        flex: 3,
-                        child: _buildControls(),
-                      ),
+                      Expanded(flex: 3, child: _buildControls()),
                     ],
                   );
                 } else {
@@ -158,11 +188,11 @@ class _BreakEvenScreenState extends ConsumerState<BreakEvenScreen> {
             prefix: '\$',
             onChanged: (val) => setState(() => _monthlyMaintenance = val),
           ),
-          
+
           const SizedBox(height: AppTheme.spacing32),
           const Divider(),
           const SizedBox(height: AppTheme.spacing24),
-          
+
           _buildVerdict(breakEvenYears),
         ],
       ),
@@ -174,36 +204,40 @@ class _BreakEvenScreenState extends ConsumerState<BreakEvenScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'RECOMMENDATION',
-          style: Theme.of(context).textTheme.labelSmall,
-        ),
+        Text('RECOMMENDATION', style: Theme.of(context).textTheme.labelSmall),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: (recommended ? AppTheme.accentColor : AppTheme.warningColor).withOpacity(0.1),
+            color: (recommended ? AppTheme.accentColor : AppTheme.warningColor)
+                .withOpacity(0.1),
             borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
             border: Border.all(
-              color: (recommended ? AppTheme.accentColor : AppTheme.warningColor).withOpacity(0.2),
+              color:
+                  (recommended ? AppTheme.accentColor : AppTheme.warningColor)
+                      .withOpacity(0.2),
             ),
           ),
           child: Row(
             children: [
               Icon(
                 recommended ? Icons.check_circle_outline : Icons.info_outline,
-                color: recommended ? AppTheme.accentColor : AppTheme.warningColor,
+                color: recommended
+                    ? AppTheme.accentColor
+                    : AppTheme.warningColor,
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  recommended 
-                    ? 'Continue SaaS model. Break-even exceeds 36 months.'
-                    : 'Consider custom build. ROI achieved within ${breakEvenYears.toStringAsFixed(1)} years.',
+                  recommended
+                      ? 'Continue SaaS model. Break-even exceeds 36 months.'
+                      : 'Consider custom build. ROI achieved within ${breakEvenYears.toStringAsFixed(1)} years.',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
-                    color: recommended ? AppTheme.accentColor : AppTheme.warningColor,
+                    color: recommended
+                        ? AppTheme.accentColor
+                        : AppTheme.warningColor,
                   ),
                 ),
               ),
@@ -261,38 +295,77 @@ class _BreakEvenScreenState extends ConsumerState<BreakEvenScreen> {
   Widget _buildVisuals(double breakEvenYears, double monthlyDiff) {
     return Column(
       children: [
-        // Summary Cards
-        Row(
-          children: [
-            Expanded(
-              child: _StatCard(
-                label: 'BREAK-EVEN',
-                value: monthlyDiff > 0 ? '${breakEvenYears.toStringAsFixed(1)} Yrs' : 'N/A',
-                icon: Icons.timer_outlined,
-                iconColor: AppTheme.primaryColor,
-              ),
-            ),
-            const SizedBox(width: AppTheme.spacing20),
-            Expanded(
-              child: _StatCard(
-                label: 'ROI TIMELINE',
-                value: monthlyDiff > 0 ? 'Positive' : 'Negative',
-                icon: Icons.show_chart,
-                iconColor: AppTheme.accentColor,
-              ),
-            ),
-            const SizedBox(width: AppTheme.spacing20),
-            Expanded(
-              child: _StatCard(
-                label: 'RISK SCORE',
-                value: breakEvenYears > 4 ? 'Low' : 'Med',
-                icon: Icons.gpp_maybe_outlined,
-                iconColor: Colors.amber,
-              ),
-            ),
-          ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 900) {
+              return Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _StatCard(
+                          label: 'BREAK-EVEN',
+                          value: monthlyDiff > 0
+                              ? '${breakEvenYears.toStringAsFixed(1)} Yrs'
+                              : 'N/A',
+                          icon: Icons.timer_outlined,
+                          iconColor: AppTheme.primaryColor,
+                        ),
+                      ),
+                      const SizedBox(width: AppTheme.spacing20),
+                      Expanded(
+                        child: _StatCard(
+                          label: 'ROI TIMELINE',
+                          value: monthlyDiff > 0 ? 'Positive' : 'Negative',
+                          icon: Icons.show_chart,
+                          iconColor: AppTheme.accentColor,
+                        ),
+                      ),
+                      const SizedBox(width: AppTheme.spacing20),
+                      Expanded(
+                        child: _StatCard(
+                          label: 'RISK SCORE',
+                          value: breakEvenYears > 4 ? 'Low' : 'Med',
+                          icon: Icons.gpp_maybe_outlined,
+                          iconColor: Colors.amber,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppTheme.spacing24),
+                ],
+              );
+            } else {
+              return Column(
+                children: [
+                  _StatCard(
+                    label: 'BREAK-EVEN',
+                    value: monthlyDiff > 0
+                        ? '${breakEvenYears.toStringAsFixed(1)} Yrs'
+                        : 'N/A',
+                    icon: Icons.timer_outlined,
+                    iconColor: AppTheme.primaryColor,
+                  ),
+                  const SizedBox(height: 12),
+                  _StatCard(
+                    label: 'ROI TIMELINE',
+                    value: monthlyDiff > 0 ? 'Positive' : 'Negative',
+                    icon: Icons.show_chart,
+                    iconColor: AppTheme.accentColor,
+                  ),
+                  const SizedBox(height: 12),
+                  _StatCard(
+                    label: 'RISK SCORE',
+                    value: breakEvenYears > 4 ? 'Low' : 'Med',
+                    icon: Icons.gpp_maybe_outlined,
+                    iconColor: Colors.amber,
+                  ),
+                  const SizedBox(height: AppTheme.spacing24),
+                ],
+              );
+            }
+          },
         ),
-        const SizedBox(height: AppTheme.spacing24),
 
         // Chart
         Container(
@@ -318,7 +391,6 @@ class _BreakEvenScreenState extends ConsumerState<BreakEvenScreen> {
       ],
     );
   }
-
 
   Widget _buildChart(double breakEvenYears) {
     final showBreakEven = breakEvenYears > 0 && breakEvenYears <= 5;
@@ -371,8 +443,12 @@ class _BreakEvenScreenState extends ConsumerState<BreakEvenScreen> {
               ),
             ),
           ),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         borderData: FlBorderData(show: false),
         minX: 0,
@@ -380,7 +456,10 @@ class _BreakEvenScreenState extends ConsumerState<BreakEvenScreen> {
         minY: 0,
         lineBarsData: [
           LineChartBarData(
-            spots: List.generate(6, (i) => FlSpot(i.toDouble(), _monthlySaasCost * 12 * i)),
+            spots: List.generate(
+              6,
+              (i) => FlSpot(i.toDouble(), _monthlySaasCost * 12 * i),
+            ),
             isCurved: true,
             color: AppTheme.primaryColor,
             barWidth: 4,
@@ -391,7 +470,13 @@ class _BreakEvenScreenState extends ConsumerState<BreakEvenScreen> {
             ),
           ),
           LineChartBarData(
-            spots: List.generate(6, (i) => FlSpot(i.toDouble(), _upfrontBuildCost + (_monthlyMaintenance * 12 * i))),
+            spots: List.generate(
+              6,
+              (i) => FlSpot(
+                i.toDouble(),
+                _upfrontBuildCost + (_monthlyMaintenance * 12 * i),
+              ),
+            ),
             isCurved: true,
             color: AppTheme.accentColor,
             barWidth: 4,

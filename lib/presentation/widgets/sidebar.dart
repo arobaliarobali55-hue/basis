@@ -35,7 +35,7 @@ class Sidebar extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.primaryColor.withOpacity(0.3),
+                        color: AppTheme.primaryColor.withValues(alpha: 0.3),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -188,7 +188,7 @@ class Sidebar extends ConsumerWidget {
                 ],
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (_, __) => const SizedBox.shrink(),
+              error: (e, s) => const SizedBox.shrink(),
             ),
           ),
         ],
@@ -230,7 +230,7 @@ class MobileSidebarDrawer extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.primaryColor.withOpacity(0.3),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -374,7 +374,9 @@ class MobileSidebarDrawer extends ConsumerWidget {
                       width: double.infinity,
                       child: OutlinedButton(
                         onPressed: () async {
-                          final repository = ref.read(supabaseRepositoryProvider);
+                          final repository = ref.read(
+                            supabaseRepositoryProvider,
+                          );
                           await repository.signOut();
                         },
                         style: OutlinedButton.styleFrom(
@@ -398,7 +400,7 @@ class MobileSidebarDrawer extends ConsumerWidget {
                   ],
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (e, s) => const SizedBox.shrink(),
               ),
             ),
           ],

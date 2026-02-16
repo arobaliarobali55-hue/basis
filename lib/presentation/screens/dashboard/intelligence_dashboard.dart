@@ -42,27 +42,47 @@ class IntelligenceDashboard extends ConsumerWidget {
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacing24),
             sliver: SliverToBoxAdapter(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // SaaS Spend Over Time (Large Line Chart)
-                  Expanded(
-                    flex: 7,
-                    child: EntryAnimation(
-                      delay: const Duration(milliseconds: 200),
-                      child: _SpendOverTimeChart(data: projection),
-                    ),
-                  ),
-                  const SizedBox(width: AppTheme.spacing24),
-                  // Spend by Category (Donut Chart)
-                  Expanded(
-                    flex: 3,
-                    child: EntryAnimation(
-                      delay: const Duration(milliseconds: 300),
-                      child: _SpendCategorySection(data: departmentData),
-                    ),
-                  ),
-                ],
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth > 900) {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // SaaS Spend Over Time (Large Line Chart)
+                        Expanded(
+                          flex: 7,
+                          child: EntryAnimation(
+                            delay: const Duration(milliseconds: 200),
+                            child: _SpendOverTimeChart(data: projection),
+                          ),
+                        ),
+                        const SizedBox(width: AppTheme.spacing24),
+                        // Spend by Category (Donut Chart)
+                        Expanded(
+                          flex: 3,
+                          child: EntryAnimation(
+                            delay: const Duration(milliseconds: 300),
+                            child: _SpendCategorySection(data: departmentData),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      children: [
+                        EntryAnimation(
+                          delay: const Duration(milliseconds: 200),
+                          child: _SpendOverTimeChart(data: projection),
+                        ),
+                        const SizedBox(height: AppTheme.spacing24),
+                        EntryAnimation(
+                          delay: const Duration(milliseconds: 300),
+                          child: _SpendCategorySection(data: departmentData),
+                        ),
+                      ],
+                    );
+                  }
+                },
               ),
             ),
           ),
@@ -97,63 +117,65 @@ class _KpiSummaryGrid extends StatelessWidget {
     // Mocking some data for the KPIs based on the reference
     final monthlySpend = projection[1] != null ? projection[1]! / 12 : 142500.0;
 
-    return Row(
-      children: [
-        Expanded(
-          child: _KpiSummaryCard(
-            label: 'TOTAL MONTHLY SPEND',
-            value: '\$${(monthlySpend).toStringAsFixed(0)}',
-            trend: '+2.4%',
-            trendColor: AppTheme.accentColor,
-            icon: Icons.account_balance_wallet,
-            iconColor: Colors.blue,
-          ),
-        ),
-        const SizedBox(width: AppTheme.spacing16),
-        Expanded(
-          child: _KpiSummaryCard(
-            label: 'ANNUAL SPEND',
-            value: '\$${(projection[1] ?? 1710000).toStringAsFixed(0)}',
-            trend: '-1.2%',
-            trendColor: AppTheme.errorColor,
-            icon: Icons.pie_chart,
-            iconColor: Colors.indigo,
-          ),
-        ),
-        const SizedBox(width: AppTheme.spacing16),
-        Expanded(
-          child: _KpiSummaryCard(
-            label: '3-YEAR PROJECTED',
-            value: '\$${(projection[3] ?? 6120000).toStringAsFixed(0)}',
-            trend: 'Est.',
-            trendColor: AppTheme.textSecondary,
-            icon: Icons.calendar_today,
-            iconColor: Colors.purple,
-          ),
-        ),
-        const SizedBox(width: AppTheme.spacing16),
-        Expanded(
-          child: _KpiSummaryCard(
-            label: 'POTENTIAL SAVINGS',
-            value: '\$18,420',
-            trend: '/mo',
-            trendColor: AppTheme.textSecondary,
-            icon: Icons.lightbulb_outline,
-            iconColor: AppTheme.accentColor,
-          ),
-        ),
-        const SizedBox(width: AppTheme.spacing16),
-        Expanded(
-          child: _KpiSummaryCard(
-            label: 'COST PER EMPLOYEE',
-            value: '\$485',
-            trend: 'Avg',
-            trendColor: AppTheme.textSecondary,
-            icon: Icons.people_outline,
-            iconColor: Colors.orange,
-          ),
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final crossAxisCount = constraints.maxWidth > 1200
+            ? 5
+            : constraints.maxWidth > 800
+            ? 3
+            : 2;
+
+        return GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: crossAxisCount,
+          mainAxisSpacing: AppTheme.spacing16,
+          crossAxisSpacing: AppTheme.spacing16,
+          childAspectRatio: constraints.maxWidth > 600 ? 1.5 : 1.2,
+          children: [
+            _KpiSummaryCard(
+              label: 'TOTAL MONTHLY SPEND',
+              value: '\$${(monthlySpend).toStringAsFixed(0)}',
+              trend: '+2.4%',
+              trendColor: AppTheme.accentColor,
+              icon: Icons.account_balance_wallet,
+              iconColor: Colors.blue,
+            ),
+            _KpiSummaryCard(
+              label: 'ANNUAL SPEND',
+              value: '\$${(projection[1] ?? 1710000).toStringAsFixed(0)}',
+              trend: '-1.2%',
+              trendColor: AppTheme.errorColor,
+              icon: Icons.pie_chart,
+              iconColor: Colors.indigo,
+            ),
+            _KpiSummaryCard(
+              label: '3-YEAR PROJECTED',
+              value: '\$${(projection[3] ?? 6120000).toStringAsFixed(0)}',
+              trend: 'Est.',
+              trendColor: AppTheme.textSecondary,
+              icon: Icons.calendar_today,
+              iconColor: Colors.purple,
+            ),
+            _KpiSummaryCard(
+              label: 'POTENTIAL SAVINGS',
+              value: '\$18,420',
+              trend: '/mo',
+              trendColor: AppTheme.textSecondary,
+              icon: Icons.lightbulb_outline,
+              iconColor: AppTheme.accentColor,
+            ),
+            _KpiSummaryCard(
+              label: 'COST PER EMPLOYEE',
+              value: '\$485',
+              trend: 'Avg',
+              trendColor: AppTheme.textSecondary,
+              icon: Icons.people_outline,
+              iconColor: Colors.orange,
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -283,29 +305,35 @@ class _SpendOverTimeChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'SaaS Spend Over Time',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              Row(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _ChartLegendItem(
-                    label: 'Actual',
-                    color: AppTheme.primaryColor,
+                  Text(
+                    'SaaS Spend Over Time',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: constraints.maxWidth < 600 ? 16 : 20,
+                    ),
                   ),
-                  const SizedBox(width: 16),
-                  _ChartLegendItem(
-                    label: 'Projected',
-                    color: AppTheme.primaryColor.withOpacity(0.4),
-                  ),
+                  if (constraints.maxWidth > 500)
+                    Row(
+                      children: [
+                        _ChartLegendItem(
+                          label: 'Actual',
+                          color: AppTheme.primaryColor,
+                        ),
+                        const SizedBox(width: 16),
+                        _ChartLegendItem(
+                          label: 'Projected',
+                          color: AppTheme.primaryColor.withOpacity(0.4),
+                        ),
+                      ],
+                    ),
                 ],
-              ),
-            ],
+              );
+            },
           ),
           const SizedBox(height: AppTheme.spacing32),
           SizedBox(
@@ -596,70 +624,123 @@ class _AiFinancialInsightsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'AI Financial Insights',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'AI Financial Insights',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: constraints.maxWidth < 600 ? 18 : null,
+                        ),
+                      ),
+                      Text(
+                        'Personalized recommendations',
+                        style: TextStyle(
+                          color: AppTheme.textTertiary,
+                          fontSize: constraints.maxWidth < 600 ? 11 : 13,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
-                Text(
-                  'Personalized recommendations based on your SaaS stack',
-                  style: TextStyle(color: AppTheme.textTertiary, fontSize: 13),
+                TextButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.auto_awesome, size: 16),
+                  label: Text(
+                    constraints.maxWidth < 600
+                        ? 'View All'
+                        : 'View All Analysis',
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppTheme.primaryColor,
+                  ),
                 ),
               ],
-            ),
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.auto_awesome, size: 16),
-              label: const Text('View All Analysis'),
-              style: TextButton.styleFrom(
-                foregroundColor: AppTheme.primaryColor,
-              ),
-            ),
-          ],
+            );
+          },
         ),
         const SizedBox(height: AppTheme.spacing24),
-        Row(
-          children: const [
-            Expanded(
-              child: _AiInsightActionCard(
-                title: 'Consolidate CRM Tools',
-                description:
-                    'Salesforce and HubSpot licenses overlap in your Marketing department.',
-                saving: '\$1,240/mo',
-                icon: Icons.merge_type,
-                iconColor: Colors.orange,
-              ),
-            ),
-            SizedBox(width: AppTheme.spacing24),
-            Expanded(
-              child: _AiInsightActionCard(
-                title: 'Unused Seat Cleanup',
-                description:
-                    'Found 24 unused seats in your Figma Enterprise account.',
-                saving: '\$360/mo',
-                icon: Icons.person_off_outlined,
-                iconColor: Colors.blue,
-              ),
-            ),
-            SizedBox(width: AppTheme.spacing24),
-            Expanded(
-              child: _AiInsightActionCard(
-                title: 'Annual Plan Savings',
-                description:
-                    'Switching Datadog to an annual contract could save up to 15%.',
-                saving: '\$8,400/yr',
-                icon: Icons.calendar_month_outlined,
-                iconColor: Colors.green,
-              ),
-            ),
-          ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 800) {
+              return Row(
+                children: const [
+                  Expanded(
+                    child: _AiInsightActionCard(
+                      title: 'Consolidate CRM Tools',
+                      description:
+                          'Salesforce and HubSpot licenses overlap in your Marketing department.',
+                      saving: '\$1,240/mo',
+                      icon: Icons.merge_type,
+                      iconColor: Colors.orange,
+                    ),
+                  ),
+                  SizedBox(width: AppTheme.spacing24),
+                  Expanded(
+                    child: _AiInsightActionCard(
+                      title: 'Unused Seat Cleanup',
+                      description:
+                          'Found 24 unused seats in your Figma Enterprise account.',
+                      saving: '\$360/mo',
+                      icon: Icons.person_off_outlined,
+                      iconColor: Colors.blue,
+                    ),
+                  ),
+                  SizedBox(width: AppTheme.spacing24),
+                  Expanded(
+                    child: _AiInsightActionCard(
+                      title: 'Annual Plan Savings',
+                      description:
+                          'Switching Datadog to an annual contract could save up to 15%.',
+                      saving: '\$8,400/yr',
+                      icon: Icons.calendar_month_outlined,
+                      iconColor: Colors.green,
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return Column(
+                children: const [
+                  _AiInsightActionCard(
+                    title: 'Consolidate CRM Tools',
+                    description:
+                        'Salesforce and HubSpot licenses overlap in your Marketing department.',
+                    saving: '\$1,240/mo',
+                    icon: Icons.merge_type,
+                    iconColor: Colors.orange,
+                  ),
+                  SizedBox(height: AppTheme.spacing16),
+                  _AiInsightActionCard(
+                    title: 'Unused Seat Cleanup',
+                    description:
+                        'Found 24 unused seats in your Figma Enterprise account.',
+                    saving: '\$360/mo',
+                    icon: Icons.person_off_outlined,
+                    iconColor: Colors.blue,
+                  ),
+                  SizedBox(height: AppTheme.spacing16),
+                  _AiInsightActionCard(
+                    title: 'Annual Plan Savings',
+                    description:
+                        'Switching Datadog to an annual contract could save up to 15%.',
+                    saving: '\$8,400/yr',
+                    icon: Icons.calendar_month_outlined,
+                    iconColor: Colors.green,
+                  ),
+                ],
+              );
+            }
+          },
         ),
       ],
     );

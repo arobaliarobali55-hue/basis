@@ -207,58 +207,118 @@ class _RentVsOwnScreenState extends ConsumerState<RentVsOwnScreen> {
 
     return Column(
       children: [
-        // Key Metrics
-        Row(
-          children: [
-            Expanded(
-              child: StatisticWidget(
-                title: 'Break-Even Point',
-                value: _breakEvenYears > 0
-                    ? '${_breakEvenYears.toStringAsFixed(1)} Years'
-                    : 'Never',
-                icon: Icons.timer_outlined,
-                iconColor: _breakEvenYears > 0 && _breakEvenYears < 3
-                    ? AppTheme.accentColor
-                    : AppTheme.warningColor,
-                subtitle: _breakEvenYears > 0
-                    ? 'ROI realized after this period'
-                    : 'SaaS is always cheaper',
-              ),
-            ),
-            const SizedBox(width: AppTheme.spacing16),
-            Expanded(
-              child: StatisticWidget(
-                title: '5-Year Savings',
-                value: _calculateSavings(),
-                icon: Icons.savings_outlined,
-                iconColor: AppTheme.secondaryColor,
-                subtitle: 'Projected difference',
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppTheme.spacing24),
-
-        // Chart
-        CustomCard(
-          height: 350,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 600) {
+              return Column(
                 children: [
-                  Text(
-                    'Cumulative Cost Trajectory',
-                    style: Theme.of(context).textTheme.titleMedium,
+                  // Key Metrics
+                  Row(
+                    children: [
+                      Expanded(
+                        child: StatisticWidget(
+                          title: 'Break-Even Point',
+                          value: _breakEvenYears > 0
+                              ? '${_breakEvenYears.toStringAsFixed(1)} Years'
+                              : 'Never',
+                          icon: Icons.timer_outlined,
+                          iconColor: _breakEvenYears > 0 && _breakEvenYears < 3
+                              ? AppTheme.accentColor
+                              : AppTheme.warningColor,
+                          subtitle: _breakEvenYears > 0
+                              ? 'ROI realized after this period'
+                              : 'SaaS is always cheaper',
+                        ),
+                      ),
+                      const SizedBox(width: AppTheme.spacing16),
+                      Expanded(
+                        child: StatisticWidget(
+                          title: '5-Year Savings',
+                          value: _calculateSavings(),
+                          icon: Icons.savings_outlined,
+                          iconColor: AppTheme.secondaryColor,
+                          subtitle: 'Projected difference',
+                        ),
+                      ),
+                    ],
                   ),
-                  _buildLegend(),
+                  const SizedBox(height: AppTheme.spacing24),
+
+                  // Chart
+                  CustomCard(
+                    height: 350,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Cumulative Cost Trajectory',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            _buildLegend(),
+                          ],
+                        ),
+                        const SizedBox(height: AppTheme.spacing24),
+                        Expanded(child: _buildChart()),
+                      ],
+                    ),
+                  ),
                 ],
-              ),
-              const SizedBox(height: AppTheme.spacing24),
-              Expanded(child: _buildChart()),
-            ],
-          ),
+              );
+            } else {
+              return Column(
+                children: [
+                  StatisticWidget(
+                    title: 'Break-Even Point',
+                    value: _breakEvenYears > 0
+                        ? '${_breakEvenYears.toStringAsFixed(1)} Years'
+                        : 'Never',
+                    icon: Icons.timer_outlined,
+                    iconColor: _breakEvenYears > 0 && _breakEvenYears < 3
+                        ? AppTheme.accentColor
+                        : AppTheme.warningColor,
+                    subtitle: _breakEvenYears > 0
+                        ? 'ROI realized after this period'
+                        : 'SaaS is always cheaper',
+                  ),
+                  const SizedBox(height: AppTheme.spacing16),
+                  StatisticWidget(
+                    title: '5-Year Savings',
+                    value: _calculateSavings(),
+                    icon: Icons.savings_outlined,
+                    iconColor: AppTheme.secondaryColor,
+                    subtitle: 'Projected difference',
+                  ),
+                  const SizedBox(height: AppTheme.spacing24),
+
+                  // Chart
+                  CustomCard(
+                    height: 350,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Cumulative Cost Trajectory',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 8),
+                            _buildLegend(),
+                          ],
+                        ),
+                        const SizedBox(height: AppTheme.spacing24),
+                        Expanded(child: _buildChart()),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+          },
         ),
 
         const SizedBox(height: AppTheme.spacing16),

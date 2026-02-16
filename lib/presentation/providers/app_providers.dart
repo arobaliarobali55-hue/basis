@@ -40,7 +40,7 @@ final isAuthenticatedProvider = Provider<bool>((ref) {
   return userAsync.when(
     data: (user) => user != null,
     loading: () => false,
-    error: (_, __) => false,
+    error: (error, stackTrace) => false,
   );
 });
 
@@ -142,7 +142,7 @@ final totalMonthlyCostProvider = Provider<double>((ref) {
   return toolsAsync.when(
     data: (tools) => calculator.calculateMonthlyTotal(tools),
     loading: () => 0.0,
-    error: (_, __) => 0.0,
+    error: (e, s) => 0.0,
   );
 });
 
@@ -153,7 +153,7 @@ final totalYearlyCostProvider = Provider<double>((ref) {
   return toolsAsync.when(
     data: (tools) => calculator.calculateYearlyTotal(tools),
     loading: () => 0.0,
-    error: (_, __) => 0.0,
+    error: (e, s) => 0.0,
   );
 });
 
@@ -164,7 +164,7 @@ final fiveYearProjectionProvider = Provider<Map<int, double>>((ref) {
   return toolsAsync.when(
     data: (tools) => calculator.calculateFiveYearProjection(tools),
     loading: () => {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
-    error: (_, __) => {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+    error: (e, s) => {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
   );
 });
 
@@ -176,14 +176,13 @@ final threeYearProjectionProvider = Provider<Map<int, double>>((ref) {
 
 /// Cost per employee provider
 final costPerEmployeeProvider = Provider<double>((ref) {
-  final toolsAsync = ref.watch(toolsProvider);
   final settingsAsync = ref.watch(userSettingsProvider);
   final monthlyCost = ref.watch(totalMonthlyCostProvider);
 
   final companySize = settingsAsync.when(
     data: (s) => s?.companySize ?? 1,
     loading: () => 1,
-    error: (_, __) => 1,
+    error: (e, s) => 1,
   );
 
   return monthlyCost / (companySize > 0 ? companySize : 1);
@@ -196,7 +195,7 @@ final departmentBreakdownProvider = Provider<Map<String, double>>((ref) {
   return toolsAsync.when(
     data: (tools) => calculator.calculateDepartmentBreakdown(tools),
     loading: () => {},
-    error: (_, __) => {},
+    error: (e, s) => {},
   );
 });
 
@@ -206,7 +205,7 @@ final monthlyProjectionProvider = Provider<List<double>>((ref) {
   return toolsAsync.when(
     data: (tools) => FinanceEngine.getMonthlyProjection(tools),
     loading: () => List.filled(36, 0.0),
-    error: (_, __) => List.filled(36, 0.0),
+    error: (e, s) => List.filled(36, 0.0),
   );
 });
 
@@ -240,7 +239,7 @@ final wasteDetectionProvider = Provider<Map<String, dynamic>>((ref) {
       'spikes': [],
       'totalWarnings': 0,
     },
-    error: (_, __) => {
+    error: (e, s) => {
       'unused': [],
       'duplicates': {},
       'spikes': [],
@@ -258,7 +257,7 @@ final consolidationSuggestionsProvider =
       return toolsAsync.when(
         data: (tools) => service.getSuggestions(tools),
         loading: () => [],
-        error: (_, __) => [],
+        error: (e, s) => [],
       );
     });
 
@@ -363,7 +362,7 @@ final themeModeProvider = Provider<ThemeMode>((ref) {
       return settings.theme == 'light' ? ThemeMode.light : ThemeMode.dark;
     },
     loading: () => ThemeMode.dark,
-    error: (_, __) => ThemeMode.dark,
+    error: (e, s) => ThemeMode.dark,
   );
 });
 
@@ -373,7 +372,7 @@ final currencyProvider = Provider<String>((ref) {
   return settingsAsync.when(
     data: (settings) => settings?.currency ?? AppConstants.defaultCurrency,
     loading: () => AppConstants.defaultCurrency,
-    error: (_, __) => AppConstants.defaultCurrency,
+    error: (e, s) => AppConstants.defaultCurrency,
   );
 });
 

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:basis/core/theme/app_theme.dart';
-import 'package:basis/presentation/providers/app_providers.dart';
 import 'package:basis/presentation/screens/dashboard/intelligence_dashboard.dart';
 import 'package:basis/presentation/screens/inventory/inventory_screen.dart';
 import 'package:basis/presentation/screens/calculator/rent_vs_own_screen.dart';
