@@ -5,8 +5,15 @@ import '../../providers/app_providers.dart';
 import '../../widgets/sidebar.dart';
 import '../../widgets/ai_insight_card.dart';
 
-class AiInsightsScreen extends ConsumerWidget {
+class AiInsightsScreen extends ConsumerStatefulWidget {
   const AiInsightsScreen({super.key});
+
+  @override
+  ConsumerState<AiInsightsScreen> createState() => _AiInsightsScreenState();
+}
+
+class _AiInsightsScreenState extends ConsumerState<AiInsightsScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _navigateTo(BuildContext context, String route) {
     if (route == '/ai-insights') return;
@@ -14,88 +21,85 @@ class AiInsightsScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final wasteData = ref.watch(wasteDetectionProvider);
     final monthlyCost = ref.watch(totalMonthlyCostProvider);
     final yearlyCost = ref.watch(totalYearlyCostProvider);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 768;
 
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: AppTheme.backgroundColor,
+      drawer: isMobile
+          ? MobileSidebarDrawer(
+              currentRoute: '/ai-insights',
+              onNavigate: (route) => _navigateTo(context, route),
+            )
+          : null,
       body: Row(
         children: [
-          Sidebar(
-            currentRoute: '/ai-insights',
-            onNavigate: (route) => _navigateTo(context, route),
-          ),
+          if (!isMobile)
+            Sidebar(
+              currentRoute: '/ai-insights',
+              onNavigate: (route) => _navigateTo(context, route),
+            ),
           Expanded(
             child: Column(
               children: [
                 // Header
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isMobile ? 16 : 32,
+                    vertical: isMobile ? 12 : 20,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.surfaceColor,
                     border: Border(
                       bottom: BorderSide(color: AppTheme.borderColor.withOpacity(0.5)),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
+                      if (isMobile)
+                        IconButton(
+                          icon: const Icon(Icons.menu, color: Colors.white),
+                          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                        ),
                       Text(
-                        'AI Financial Insights',
+                        'AI Insights',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: isMobile ? 20 : 24,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(width: 12),
-                      _BetaBadge(),
+                      const SizedBox(width: 12),
+                      const _BetaBadge(),
                     ],
                   ),
                 ),
                 // Content
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(32),
+                    padding: EdgeInsets.all(isMobile ? 16 : 32),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Summary Cards
-                        Row(
-                          children: [
-                            _SummaryCard(
-                              title: 'Potential Annual Savings',
-                              value: '\$${(yearlyCost * 0.15).toStringAsFixed(0)}',
-                              subtitle: 'Based on AI analysis',
-                              icon: Icons.savings_outlined,
-                              color: AppTheme.accentColor,
-                            ),
-                            const SizedBox(width: 16),
-                            _SummaryCard(
-                              title: 'Active Alerts',
-                              value: '${wasteData['totalWarnings']}',
-                              subtitle: 'Requires attention',
-                              icon: Icons.notifications_active_outlined,
-                              color: AppTheme.warningColor,
-                            ),
-                            const SizedBox(width: 16),
-                            _SummaryCard(
-                              title: 'Optimization Score',
-                              value: '78',
-                              subtitle: 'Out of 100',
-                              icon: Icons.trending_up,
-                              color: AppTheme.primaryColor,
-                            ),
-                          ],
+                        _buildSummaryCards(
+                          wasteData: wasteData,
+                          monthlyCost: monthlyCost,
+                          yearlyCost: yearlyCost,
+                          isMobile: isMobile,
                         ),
-                        const SizedBox(height: 32),
+                        SizedBox(height: isMobile ? 24 : 32),
 
                         // Insights List
-                        const Text(
+                        Text(
                           'Priority Insights',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: isMobile ? 18 : 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -109,7 +113,7 @@ class AiInsightsScreen extends ConsumerWidget {
                               child: AiInsightCard(
                                 priority: InsightPriority.high,
                                 icon: Icons.people_outline,
-                                title: 'Unused Licenses Detected',
+                                title: 'Unused Licenses',
                                 description:
                                     '${wasteData['zeroSeatsCount']} tools have zero active users but are still being billed monthly. Consider downgrading or canceling these subscriptions.',
                                 savingsLabel: 'Est. Monthly Leak',
@@ -127,7 +131,7 @@ class AiInsightsScreen extends ConsumerWidget {
                                 title: 'High Growth Alert',
                                 description:
                                     '${wasteData['highGrowthCount']} tools have increased by more than 20% in cost over the last quarter. Review pricing tiers and negotiate discounts.',
-                                savingsLabel: 'Potential Consolidation',
+                                savingsLabel: 'Potential Savings',
                                 savingsValue: '\$${(monthlyCost * 0.05).toStringAsFixed(0)}',
                                 savingsColor: AppTheme.warningColor,
                                 onAction: () {},
@@ -142,7 +146,7 @@ class AiInsightsScreen extends ConsumerWidget {
                               description:
                                   '3 major contracts (AWS, Salesforce, Slack) are renewing in the next 60 days. Consider switching to annual billing for 15-20% discounts.',
                               savingsLabel: 'Est. Annual Saving',
-                              savingsValue: '\$${(yearlyCost * 0.12).toStringAsFixed(0)}',
+                              savingsValue: '\$12,450',
                               savingsColor: AppTheme.accentColor,
                               onAction: () {},
                             ),
@@ -155,8 +159,8 @@ class AiInsightsScreen extends ConsumerWidget {
                               title: 'Tool Function Overlap',
                               description:
                                   'Miro, LucidChart, and FigJam are all being used for diagramming. Consider consolidating to a single tool for better pricing.',
-                              savingsLabel: 'Potential Consolidation',
-                              savingsValue: '\$${(monthlyCost * 0.03).toStringAsFixed(0)}',
+                              savingsLabel: 'Potential Savings',
+                              savingsValue: '\$320',
                               savingsColor: AppTheme.warningColor,
                               onAction: () {},
                             ),
@@ -210,6 +214,55 @@ class AiInsightsScreen extends ConsumerWidget {
       ),
     );
   }
+
+  Widget _buildSummaryCards({
+    required Map<String, dynamic> wasteData,
+    required double monthlyCost,
+    required double yearlyCost,
+    required bool isMobile,
+  }) {
+    final cards = [
+      _SummaryCard(
+        title: 'Potential Savings',
+        value: '\$${(yearlyCost * 0.15).toStringAsFixed(0)}',
+        subtitle: 'Annual',
+        icon: Icons.savings_outlined,
+        color: AppTheme.accentColor,
+        isCompact: isMobile,
+      ),
+      _SummaryCard(
+        title: 'Active Alerts',
+        value: '${wasteData['totalWarnings']}',
+        subtitle: 'Need attention',
+        icon: Icons.notifications_active_outlined,
+        color: AppTheme.warningColor,
+        isCompact: isMobile,
+      ),
+      _SummaryCard(
+        title: 'Score',
+        value: '78',
+        subtitle: 'Out of 100',
+        icon: Icons.trending_up,
+        color: AppTheme.primaryColor,
+        isCompact: isMobile,
+      ),
+    ];
+
+    if (isMobile) {
+      return Row(
+        children: cards.map((card) => Expanded(child: card)).toList(),
+      );
+    }
+
+    return Row(
+      children: [
+        for (int i = 0; i < cards.length; i++) ...[
+          Expanded(child: cards[i]),
+          if (i < cards.length - 1) const SizedBox(width: 16),
+        ],
+      ],
+    );
+  }
 }
 
 class _BetaBadge extends StatelessWidget {
@@ -241,6 +294,7 @@ class _SummaryCard extends StatelessWidget {
   final String subtitle;
   final IconData icon;
   final Color color;
+  final bool isCompact;
 
   const _SummaryCard({
     required this.title,
@@ -248,64 +302,96 @@ class _SummaryCard extends StatelessWidget {
     required this.subtitle,
     required this.icon,
     required this.color,
+    this.isCompact = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: AppTheme.cardColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.borderColor.withOpacity(0.5)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppTheme.textTertiary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+    return Container(
+      padding: EdgeInsets.all(isCompact ? 12 : 24),
+      margin: isCompact ? const EdgeInsets.symmetric(horizontal: 4) : EdgeInsets.zero,
+      decoration: BoxDecoration(
+        color: AppTheme.cardColor,
+        borderRadius: BorderRadius.circular(isCompact ? 12 : 16),
+        border: Border.all(color: AppTheme.borderColor.withOpacity(0.5)),
       ),
+      child: isCompact
+          ? Column(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(icon, color: color, size: 18),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: AppTheme.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: color),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        value,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: color,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.textTertiary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }
