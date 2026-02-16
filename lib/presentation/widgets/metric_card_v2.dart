@@ -10,6 +10,7 @@ class MetricCardV2 extends StatelessWidget {
   final String? trendLabel;
   final bool isLoading;
   final String? prefix;
+  final bool isCompact;
 
   const MetricCardV2({
     super.key,
@@ -20,6 +21,7 @@ class MetricCardV2 extends StatelessWidget {
     this.trendLabel,
     this.isLoading = false,
     this.prefix,
+    this.isCompact = false,
   });
 
   @override
@@ -42,31 +44,34 @@ class MetricCardV2 extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(isCompact ? 12 : 20),
       decoration: BoxDecoration(
         color: AppTheme.cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(isCompact ? 12 : 16),
         border: Border.all(
           color: AppTheme.borderColor.withOpacity(0.5),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             label.toUpperCase(),
-            style: const TextStyle(
-              fontSize: 11,
+            style: TextStyle(
+              fontSize: isCompact ? 9 : 11,
               fontWeight: FontWeight.w600,
               color: AppTheme.textTertiary,
-              letterSpacing: 1,
+              letterSpacing: 0.5,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: isCompact ? 8 : 12),
           if (isLoading)
-            const SizedBox(
-              height: 32,
-              child: Center(
+            SizedBox(
+              height: isCompact ? 24 : 32,
+              child: const Center(
                 child: SizedBox(
                   width: 20,
                   height: 20,
@@ -84,21 +89,22 @@ class MetricCardV2 extends StatelessWidget {
                 Expanded(
                   child: Text(
                     formattedValue,
-                    style: const TextStyle(
-                      fontSize: 24,
+                    style: TextStyle(
+                      fontSize: isCompact ? 16 : 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                     overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ),
                 if (suffix != null)
                   Padding(
-                    padding: const EdgeInsets.only(left: 4, bottom: 4),
+                    padding: const EdgeInsets.only(left: 4, bottom: 2),
                     child: Text(
                       suffix!,
-                      style: const TextStyle(
-                        fontSize: 12,
+                      style: TextStyle(
+                        fontSize: isCompact ? 10 : 12,
                         color: AppTheme.textTertiary,
                       ),
                     ),
@@ -106,24 +112,24 @@ class MetricCardV2 extends StatelessWidget {
               ],
             ),
           if (trend != null) ...[
-            const SizedBox(height: 8),
+            SizedBox(height: isCompact ? 4 : 8),
             Row(
               children: [
                 Icon(
                   trend! >= 0 ? Icons.trending_up : Icons.trending_down,
-                  size: 14,
+                  size: isCompact ? 12 : 14,
                   color: trend! >= 0 ? AppTheme.accentColor : AppTheme.errorColor,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   '${trend!.abs().toStringAsFixed(1)}%',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: isCompact ? 10 : 12,
                     fontWeight: FontWeight.w600,
                     color: trend! >= 0 ? AppTheme.accentColor : AppTheme.errorColor,
                   ),
                 ),
-                if (trendLabel != null) ...[
+                if (trendLabel != null && !isCompact) ...[
                   const SizedBox(width: 4),
                   Text(
                     trendLabel!,
